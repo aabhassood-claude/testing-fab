@@ -68,6 +68,22 @@
   .quick-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
   .quick-desc { font-size: 11px; color: #999; line-height: 1.3; }
 
+  /* Format toggle */
+  .format-section { margin-bottom: 28px; }
+  .format-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
+  .format-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fmt-btn {
+    display: flex; align-items: center; gap: 14px; padding: 16px 20px;
+    border-radius: 12px; border: 2px solid #e8e8e8; background: #fff;
+    cursor: pointer; text-align: left; transition: all 120ms ease;
+    font-family: inherit;
+  }
+  .fmt-btn:hover { border-color: #ccc; }
+  .fmt-btn.active { border-color: #1a1a1a; background: #fafafa; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .fmt-icon { font-size: 24px; flex-shrink: 0; }
+  .fmt-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .fmt-desc { font-size: 11px; color: #999; line-height: 1.3; }
+
   /* Separator */
   .sep { height: 1px; background: #e8e8e8; margin: 0 0 20px; }
 
@@ -140,6 +156,27 @@
     </div>
   </div>
 
+  <!-- Format toggle: Image / Video -->
+  <div class="format-section">
+    <div class="format-label">Output format</div>
+    <div class="format-toggle">
+      <button class="fmt-btn active" onclick="selectFormat(this, 'image')">
+        <span class="fmt-icon">🖼️</span>
+        <div>
+          <div class="fmt-title">Image</div>
+          <div class="fmt-desc">Static visuals — ads, posts, banners, product shots</div>
+        </div>
+      </button>
+      <button class="fmt-btn" onclick="selectFormat(this, 'video')">
+        <span class="fmt-icon">🎬</span>
+        <div>
+          <div class="fmt-title">Video</div>
+          <div class="fmt-desc">Motion content — reels, stories, UGC, product demos</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
   <!-- Quick Modes -->
   <div class="sep"></div>
   <div class="quick-label">Quick Modes</div>
@@ -172,6 +209,10 @@
   function selectCat(card) {
     document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
+  }
+  function selectFormat(btn, fmt) {
+    document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
   function selectOpt(pill) {
     const card = pill.closest('.cat-card');

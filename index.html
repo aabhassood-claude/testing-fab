@@ -125,6 +125,30 @@
   }
   .attach-opt:hover { border-color: #ccc; background: #f5f5f5; transform: translateY(-1px); }
 
+  .angle-chip {
+    padding: 8px 16px; border-radius: 10px; border: 1.5px solid #ddd;
+    background: #fff; color: #666; font-family: inherit; font-size: 13px;
+    cursor: pointer; transition: all 120ms; font-weight: 500;
+  }
+  .angle-chip:hover { border-color: #bbb; color: #333; }
+  .angle-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; font-weight: 600; }
+
+  .r-section { margin-bottom: 16px; }
+  .r-label { font-size: 11px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .r-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .r-chip {
+    padding: 6px 12px; border-radius: 8px; border: 1px solid #e0e0e0;
+    background: #fafafa; color: #666; font-family: inherit; font-size: 12px;
+    cursor: pointer; transition: all 100ms;
+  }
+  .r-chip:hover { border-color: #ccc; color: #333; }
+  .r-chip.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .r-select {
+    width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #e0e0e0;
+    background: #fff; font-family: inherit; font-size: 13px; color: #333;
+  }
+  .r-range { width: 100%; }
+
   @media (max-width: 768px) {
     .big-cards, .approach-cards { grid-template-columns: 1fr; }
     .quick-modes { grid-template-columns: 1fr 1fr; }
@@ -392,12 +416,19 @@
           </div>
         </div>
 
-        <!-- Suggest chips -->
-        <div style="display:flex; gap:8px; margin-top:14px; justify-content:center; flex-wrap:wrap;">
-          <button class="s5-chip" onclick="fillPrompt('Product hero shot, minimal white background')">✏️ Product shot</button>
-          <button class="s5-chip" onclick="fillPrompt('Bold sale banner, urgency, countdown timer')">📈 Sale banner</button>
-          <button class="s5-chip" onclick="fillPrompt('Lifestyle scene, person using product, golden hour')">🌅 Lifestyle</button>
-          <button class="s5-chip" onclick="fillPrompt('Social proof ad with testimonial quote')">💬 Testimonial</button>
+        <!-- Angles -->
+        <div style="margin-top:24px;">
+          <div style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#aaa; margin-bottom:10px; text-align:center;">Choose an angle</div>
+          <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+            <button class="angle-chip active" onclick="pickAngle(this, 'hero')">🎯 Hero Shot</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'lifestyle')">🌅 Lifestyle</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'social-proof')">💬 Social Proof</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'urgency')">🔥 Urgency / Sale</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'comparison')">⚖️ Comparison</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'ugc')">📱 UGC Style</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'unboxing')">📦 Unboxing</button>
+            <button class="angle-chip" onclick="pickAngle(this, 'infographic')">📊 Infographic</button>
+          </div>
         </div>
       </div>
 
@@ -445,8 +476,33 @@
       </div>
     </div>
 
-    <!-- RIGHT: Blank panel (ready for content) -->
-    <div style="background:#eeeee8; border-left:1px solid #ddd;"></div>
+    <!-- RIGHT: Dynamic config panel (changes per angle) -->
+    <div style="background:#fff; border-left:1px solid #e8e8e8; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Active angle header -->
+      <div>
+        <div style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#bbb; margin-bottom:6px;">Active Angle</div>
+        <div id="rAngleName" style="font-size:16px; font-weight:700;">🎯 Hero Shot</div>
+        <div id="rAngleDesc" style="font-size:12px; color:#999; margin-top:4px; line-height:1.4;">Clean, centered product on minimal background. Best for hero banners and landing pages.</div>
+      </div>
+
+      <div style="height:1px; background:#eee;"></div>
+
+      <!-- Dynamic config sections -->
+      <div id="rConfig">
+        <!-- Populated by pickAngle() -->
+      </div>
+
+      <!-- Generate button -->
+      <div style="margin-top:auto; padding-top:16px; border-top:1px solid #eee;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:12px; color:#bbb;">⚡ Credits</span>
+          <span style="font-size:13px; font-weight:600; color:#1a1a1a;">4 credits</span>
+        </div>
+        <button onclick="generateFromPrompt()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#1a1a1a; color:#fff; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer;">✨ Generate</button>
+      </div>
+
+    </div>
 
   </div>
 </div>
@@ -458,7 +514,7 @@
     document.querySelectorAll('.page, #step5').forEach(p => p.style.display = 'none');
     document.getElementById(id).style.display = id === 'step5' ? 'block' : 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (id === 'step5') updatePanel();
+    if (id === 'step5') initRightPanel();
   }
 
   function fillPrompt(text) {
@@ -472,6 +528,120 @@
     const prompt = document.getElementById('promptInput').value;
     if (!prompt.trim()) { document.getElementById('promptInput').focus(); return; }
     alert('🚀 Generating with prompt:\n\n"' + prompt + '"');
+  }
+
+  // Angle configs — each angle has different settings in the right panel
+  const ANGLE_CONFIGS = {
+    'hero': {
+      name: '🎯 Hero Shot', desc: 'Clean, centered product on minimal background. Best for hero banners and landing pages.',
+      sections: [
+        { label: 'Background', type: 'chips', options: ['White', 'Gradient', 'Scene', 'Transparent'], active: [0] },
+        { label: 'Composition', type: 'chips', options: ['Centered', 'Rule of thirds', 'Flat lay', 'Angled'], active: [0] },
+        { label: 'Lighting', type: 'chips', options: ['Studio', 'Natural', 'Dramatic', 'Soft'], active: [0] },
+        { label: 'Aspect Ratio', type: 'chips', options: ['1:1', '4:5', '16:9', '9:16'], active: [0] },
+        { label: 'Variations', type: 'chips', options: ['1', '4', '8'], active: [1] },
+      ]
+    },
+    'lifestyle': {
+      name: '🌅 Lifestyle', desc: 'Product in real-world settings with people. Great for social + brand storytelling.',
+      sections: [
+        { label: 'Setting', type: 'chips', options: ['Outdoor', 'Indoor', 'Urban', 'Beach', 'Café'], active: [0] },
+        { label: 'Time of Day', type: 'chips', options: ['Golden hour', 'Midday', 'Night', 'Overcast'], active: [0] },
+        { label: 'People', type: 'chips', options: ['No people', '1 person', 'Group', 'Hands only'], active: [1] },
+        { label: 'Mood', type: 'chips', options: ['Warm', 'Cool', 'Vibrant', 'Muted'], active: [0] },
+        { label: 'Aspect Ratio', type: 'chips', options: ['1:1', '4:5', '9:16'], active: [1] },
+      ]
+    },
+    'social-proof': {
+      name: '💬 Social Proof', desc: 'Testimonial-driven creative with quotes, ratings, and trust signals.',
+      sections: [
+        { label: 'Format', type: 'chips', options: ['Quote card', 'Video still', 'Review screenshot', 'Rating badge'], active: [0] },
+        { label: 'Tone', type: 'chips', options: ['Professional', 'Casual', 'Bold', 'Minimal'], active: [0] },
+        { label: 'Elements', type: 'chips', options: ['Star rating', 'Avatar', 'Company logo', 'Metric'], active: [0, 1] },
+        { label: 'Layout', type: 'chips', options: ['Left-aligned', 'Centered', 'Split'], active: [1] },
+      ]
+    },
+    'urgency': {
+      name: '🔥 Urgency / Sale', desc: 'High-contrast, conversion-focused with countdown, pricing, and scarcity cues.',
+      sections: [
+        { label: 'Sale Type', type: 'chips', options: ['% Off', 'Flash sale', 'Limited stock', 'Bundle deal', 'BOGO'], active: [0] },
+        { label: 'Urgency Element', type: 'chips', options: ['Countdown', 'Stock counter', 'Deadline text', 'None'], active: [0] },
+        { label: 'Color Intensity', type: 'chips', options: ['Loud (red)', 'Medium', 'Subtle', 'Brand colors'], active: [0] },
+        { label: 'CTA Style', type: 'chips', options: ['Shop Now', 'Grab Deal', 'Limited Time', 'Custom'], active: [0] },
+      ]
+    },
+    'comparison': {
+      name: '⚖️ Comparison', desc: 'Side-by-side before/after or product vs competitor. Great for retargeting.',
+      sections: [
+        { label: 'Layout', type: 'chips', options: ['Side by side', 'Split diagonal', 'Slider', 'Stacked'], active: [0] },
+        { label: 'Type', type: 'chips', options: ['Before / After', 'Us vs Them', 'Feature table', 'Price compare'], active: [0] },
+        { label: 'Highlight', type: 'chips', options: ['Circle winner', 'Checkmarks', 'Color coding', 'Arrows'], active: [0] },
+      ]
+    },
+    'ugc': {
+      name: '📱 UGC Style', desc: 'Authentic, phone-shot aesthetic. Feels organic, performs on social.',
+      sections: [
+        { label: 'Style', type: 'chips', options: ['Selfie', 'POV', 'Talking head', 'Flat lay'], active: [0] },
+        { label: 'Platform', type: 'chips', options: ['TikTok', 'Instagram Reel', 'Story', 'YouTube Short'], active: [0] },
+        { label: 'Overlay', type: 'chips', options: ['Captions', 'Stickers', 'None', 'Brand tag'], active: [0] },
+        { label: 'Duration', type: 'chips', options: ['6s', '15s', '30s', '60s'], active: [1] },
+      ]
+    },
+    'unboxing': {
+      name: '📦 Unboxing', desc: 'First-impression reveal — build anticipation and show packaging quality.',
+      sections: [
+        { label: 'Stage', type: 'chips', options: ['Sealed box', 'Opening', 'Revealed', 'In-use'], active: [2] },
+        { label: 'Angle', type: 'chips', options: ['Top-down', 'Eye-level', 'Close-up', 'Wide'], active: [1] },
+        { label: 'Surface', type: 'chips', options: ['Marble', 'Wood', 'White', 'Branded'], active: [0] },
+        { label: 'Include', type: 'chips', options: ['Hands', 'Accessories', 'Gift wrap', 'Insert cards'], active: [0, 1] },
+      ]
+    },
+    'infographic': {
+      name: '📊 Infographic', desc: 'Data-driven, feature callouts, specs, and visual hierarchy for education.',
+      sections: [
+        { label: 'Type', type: 'chips', options: ['Feature list', 'Specs table', 'How it works', 'Stats'], active: [0] },
+        { label: 'Layout', type: 'chips', options: ['Vertical', 'Horizontal', 'Grid', 'Timeline'], active: [0] },
+        { label: 'Style', type: 'chips', options: ['Flat', 'Isometric', 'Photo + overlay', 'Illustrated'], active: [0] },
+        { label: 'Density', type: 'chips', options: ['Minimal (3–4 pts)', 'Medium (5–7)', 'Dense (8+)'], active: [0] },
+      ]
+    },
+  };
+
+  function pickAngle(btn, angleId) {
+    document.querySelectorAll('.angle-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cfg = ANGLE_CONFIGS[angleId];
+    if (!cfg) return;
+
+    document.getElementById('rAngleName').textContent = cfg.name;
+    document.getElementById('rAngleDesc').textContent = cfg.desc;
+
+    const container = document.getElementById('rConfig');
+    container.innerHTML = '';
+
+    cfg.sections.forEach((sec, si) => {
+      const div = document.createElement('div');
+      div.className = 'r-section';
+      div.innerHTML = '<div class="r-label">' + sec.label + '</div>';
+
+      const chips = document.createElement('div');
+      chips.className = 'r-chips';
+      sec.options.forEach((opt, oi) => {
+        const c = document.createElement('button');
+        c.className = 'r-chip' + (sec.active.includes(oi) ? ' on' : '');
+        c.textContent = opt;
+        c.onclick = function() { this.classList.toggle('on'); };
+        chips.appendChild(c);
+      });
+      div.appendChild(chips);
+      container.appendChild(div);
+    });
+  }
+
+  // Initialize right panel on load
+  function initRightPanel() {
+    pickAngle(document.querySelector('.angle-chip.active'), 'hero');
   }
 
   function toggleAttachMenu() {

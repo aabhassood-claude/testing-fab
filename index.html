@@ -150,6 +150,21 @@
   .att-cr-name { font-size: 12px; font-weight: 600; }
   .att-cr-meta { font-size: 10px; color: #aaa; margin-top: 2px; }
 
+  /* Concept cards */
+  .concept-card {
+    border-radius: 12px; border: 2px solid #e8e8e8; background: #fff;
+    cursor: pointer; overflow: hidden; transition: all 120ms; text-align: center;
+  }
+  .concept-card:hover { border-color: #ccc; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .concept-card.selected { border-color: #1a1a1a; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .concept-thumb {
+    height: 100px; display: flex; align-items: center; justify-content: center;
+    font-size: 36px; position: relative;
+  }
+  .concept-label { padding: 8px 10px; }
+  .concept-name { font-size: 12px; font-weight: 600; }
+  .concept-tag { font-size: 10px; color: #999; margin-top: 2px; }
+
   .angle-chip {
     padding: 8px 16px; border-radius: 10px; border: 1.5px solid #ddd;
     background: #fff; color: #666; font-family: inherit; font-size: 13px;
@@ -489,6 +504,14 @@
             <button class="angle-chip" onclick="pickAngle(this, 'infographic')">📊 Infographic</button>
           </div>
         </div>
+
+        <!-- Concepts (visual cards — appear based on selected angle) -->
+        <div style="margin-top:20px;">
+          <div style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#aaa; margin-bottom:10px; text-align:center;">Concepts <span style="color:#ccc; font-weight:400;">· select one to configure</span></div>
+          <div id="conceptGrid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+            <!-- Populated by pickAngle() -->
+          </div>
+        </div>
       </div>
 
       <!-- Attach popup -->
@@ -657,7 +680,139 @@
     alert('🚀 Generating with prompt:\n\n"' + prompt + '"');
   }
 
-  // Angle configs — each angle has different settings in the right panel
+  // Concepts per angle — each concept has its own right-panel config
+  const ANGLE_CONCEPTS = {
+    'hero': [
+      { id:'h1', emoji:'👕', name:'Minimal Studio', tag:'Clean bg', bg:'#f8f8f0', config: { sections: [
+        { label:'Background', options:['Pure white','Light grey','Gradient','Transparent'], active:[0] },
+        { label:'Shadow', options:['None','Soft drop','Hard','Reflection'], active:[1] },
+        { label:'Crop', options:['Full product','Close-up','Macro detail'], active:[0] },
+        { label:'Aspect Ratio', options:['1:1','4:5','16:9'], active:[0] },
+      ]}},
+      { id:'h2', emoji:'🌈', name:'Gradient Pop', tag:'Bold colors', bg:'linear-gradient(135deg,#fce4ec,#e8eaf6)', config: { sections: [
+        { label:'Gradient Style', options:['Dual tone','Radial','Mesh','Neon'], active:[0] },
+        { label:'Product Position', options:['Center float','Bottom anchored','Tilted'], active:[0] },
+        { label:'Text Overlay', options:['None','Brand name','Tagline','Price'], active:[0] },
+      ]}},
+      { id:'h3', emoji:'🖤', name:'Dark Moody', tag:'Premium feel', bg:'linear-gradient(135deg,#1a1a1a,#2d2d2d)', config: { sections: [
+        { label:'Lighting', options:['Rim light','Spot','Ambient glow','Silhouette'], active:[0] },
+        { label:'Smoke/Fog', options:['None','Subtle','Medium','Heavy'], active:[1] },
+        { label:'Accent Color', options:['Gold','White','Brand color','None'], active:[0] },
+      ]}},
+      { id:'h4', emoji:'🏖', name:'Scene Placed', tag:'In context', bg:'linear-gradient(135deg,#e8f5e9,#fff3e0)', config: { sections: [
+        { label:'Scene', options:['Beach','Kitchen','Office','Outdoor'], active:[0] },
+        { label:'Time', options:['Morning','Golden hour','Night'], active:[1] },
+        { label:'Depth of Field', options:['Sharp all','Shallow bg blur','Tilt shift'], active:[1] },
+      ]}},
+    ],
+    'lifestyle': [
+      { id:'l1', emoji:'☕', name:'Cozy Indoor', tag:'Warm & relaxed', bg:'linear-gradient(135deg,#fff8e1,#fff3e0)', config: { sections: [
+        { label:'Setting', options:['Living room','Kitchen','Bedroom','Café'], active:[0] },
+        { label:'People', options:['Solo','Couple','No people','Hands only'], active:[0] },
+        { label:'Mood', options:['Warm','Hygge','Bright','Muted'], active:[0] },
+      ]}},
+      { id:'l2', emoji:'🌿', name:'Outdoor Fresh', tag:'Nature vibes', bg:'linear-gradient(135deg,#e8f5e9,#c8e6c9)', config: { sections: [
+        { label:'Location', options:['Park','Trail','Rooftop','Garden'], active:[0] },
+        { label:'Activity', options:['Walking','Sitting','Active','Posing'], active:[0] },
+        { label:'Light', options:['Golden hour','Midday','Overcast','Dappled'], active:[0] },
+      ]}},
+      { id:'l3', emoji:'🏙', name:'Urban Street', tag:'City energy', bg:'linear-gradient(135deg,#eceff1,#cfd8dc)', config: { sections: [
+        { label:'Vibe', options:['Gritty','Clean','Neon night','Vintage'], active:[0] },
+        { label:'Frame', options:['Wide street','Close portrait','Over shoulder','Flat lay'], active:[0] },
+        { label:'Style', options:['Candid','Posed','Motion blur','Editorial'], active:[0] },
+      ]}},
+      { id:'l4', emoji:'🏖', name:'Beach / Travel', tag:'Aspirational', bg:'linear-gradient(135deg,#e0f7fa,#b2ebf2)', config: { sections: [
+        { label:'Scene', options:['Beach','Poolside','Resort','Mountain'], active:[0] },
+        { label:'Product', options:['Worn/used','Held','Placed','Background'], active:[0] },
+      ]}},
+    ],
+    'social-proof': [
+      { id:'sp1', emoji:'⭐', name:'Review Card', tag:'Rating + quote', bg:'#fffde7', config: { sections: [
+        { label:'Rating Style', options:['5 stars','Score /10','Thumbs up','Hearts'], active:[0] },
+        { label:'Layout', options:['Centered','Left-aligned','Card stack'], active:[0] },
+        { label:'Source', options:['Customer name','Anonymous','Influencer','Expert'], active:[0] },
+      ]}},
+      { id:'sp2', emoji:'📹', name:'Video Still', tag:'Testimonial frame', bg:'linear-gradient(135deg,#f3e5f5,#e8eaf6)', config: { sections: [
+        { label:'Frame', options:['Talking head','Screen recording','Split screen'], active:[0] },
+        { label:'Overlay', options:['Quote bar','Captions','Name card','None'], active:[0] },
+      ]}},
+      { id:'sp3', emoji:'📊', name:'Stats Driven', tag:'Numbers first', bg:'linear-gradient(135deg,#e8eaf6,#e3f2fd)', config: { sections: [
+        { label:'Metric', options:['Percentage','Count','Revenue','Time saved'], active:[0] },
+        { label:'Visual', options:['Big number','Chart','Progress bar','Icon grid'], active:[0] },
+        { label:'Tone', options:['Bold','Professional','Playful'], active:[0] },
+      ]}},
+    ],
+    'urgency': [
+      { id:'u1', emoji:'⏰', name:'Countdown', tag:'Timer driven', bg:'linear-gradient(135deg,#ffebee,#fce4ec)', config: { sections: [
+        { label:'Timer Style', options:['Digital clock','Flip counter','Bar','Circle'], active:[0] },
+        { label:'Urgency Level', options:['Hours left','Last day','Almost gone','Final call'], active:[0] },
+        { label:'Color', options:['Red hot','Orange','Black + accent','Brand'], active:[0] },
+      ]}},
+      { id:'u2', emoji:'💰', name:'Price Drop', tag:'Discount focus', bg:'linear-gradient(135deg,#fff3e0,#ffe0b2)', config: { sections: [
+        { label:'Discount Type', options:['% off','$ amount','Strikethrough','Bundle'], active:[0] },
+        { label:'Badge', options:['Starburst','Ribbon','Circle','Tag'], active:[0] },
+        { label:'CTA', options:['Shop Now','Grab Deal','Limited Time','Add to Cart'], active:[0] },
+      ]}},
+      { id:'u3', emoji:'🚨', name:'Limited Stock', tag:'Scarcity cue', bg:'linear-gradient(135deg,#fce4ec,#f8bbd0)', config: { sections: [
+        { label:'Stock Signal', options:['X left','Low stock bar','Selling fast','Last chance'], active:[0] },
+        { label:'Social Proof', options:['X people viewing','X sold today','None'], active:[0] },
+      ]}},
+    ],
+    'comparison': [
+      { id:'c1', emoji:'↔️', name:'Side by Side', tag:'Classic split', bg:'linear-gradient(135deg,#e8eaf6,#f3e5f5)', config: { sections: [
+        { label:'Divider', options:['Vertical line','Diagonal','Slider handle','Gap'], active:[0] },
+        { label:'Label', options:['Before/After','Us/Them','Old/New','Free/Pro'], active:[0] },
+      ]}},
+      { id:'c2', emoji:'✅', name:'Feature Table', tag:'Checkmark grid', bg:'#f5f5f5', config: { sections: [
+        { label:'Columns', options:['2 products','3 products','Us vs Rest'], active:[0] },
+        { label:'Highlight', options:['Green checks','Stars','Bold text','Color row'], active:[0] },
+      ]}},
+    ],
+    'ugc': [
+      { id:'ug1', emoji:'🤳', name:'Selfie Review', tag:'Phone POV', bg:'linear-gradient(135deg,#fff3e0,#ffe0b2)', config: { sections: [
+        { label:'Platform', options:['TikTok','Instagram','YouTube Short','Story'], active:[0] },
+        { label:'Overlay', options:['Captions','Stickers','Product tag','None'], active:[0] },
+        { label:'Duration', options:['6s','15s','30s','60s'], active:[1] },
+      ]}},
+      { id:'ug2', emoji:'📦', name:'Unbox React', tag:'First impression', bg:'linear-gradient(135deg,#e8f5e9,#c8e6c9)', config: { sections: [
+        { label:'Stage', options:['Sealed','Opening','Reveal','Reaction'], active:[2] },
+        { label:'Audio', options:['Voiceover','Music','ASMR','Silent'], active:[0] },
+      ]}},
+      { id:'ug3', emoji:'💬', name:'Talking Head', tag:'Direct to camera', bg:'linear-gradient(135deg,#e3f2fd,#bbdefb)', config: { sections: [
+        { label:'Hook', options:['Question','Bold claim','Story start','Shocking stat'], active:[0] },
+        { label:'Background', options:['Room','Green screen','Outdoor','Blurred'], active:[0] },
+      ]}},
+    ],
+    'unboxing': [
+      { id:'ub1', emoji:'🎁', name:'Gift Reveal', tag:'Premium unwrap', bg:'linear-gradient(135deg,#fce4ec,#f8bbd0)', config: { sections: [
+        { label:'Packaging', options:['Box','Bag','Envelope','Tube'], active:[0] },
+        { label:'Surface', options:['Marble','Wood','White','Fabric'], active:[0] },
+        { label:'Props', options:['Tissue paper','Ribbon','Stickers','None'], active:[0] },
+      ]}},
+      { id:'ub2', emoji:'📸', name:'Flat Lay', tag:'Top-down spread', bg:'#f5f5f0', config: { sections: [
+        { label:'Items', options:['Product only','With accessories','Full set','Ingredients'], active:[1] },
+        { label:'Arrangement', options:['Grid','Scattered','Radial','Diagonal'], active:[0] },
+      ]}},
+    ],
+    'infographic': [
+      { id:'ig1', emoji:'📋', name:'Feature List', tag:'Bullet points', bg:'linear-gradient(135deg,#e8eaf6,#c5cae9)', config: { sections: [
+        { label:'Count', options:['3 features','5 features','7 features'], active:[0] },
+        { label:'Icon Style', options:['Emoji','Line icons','Filled','Numbered'], active:[1] },
+        { label:'Layout', options:['Vertical list','2-col grid','Horizontal'], active:[0] },
+      ]}},
+      { id:'ig2', emoji:'📈', name:'Stats Dashboard', tag:'Numbers heavy', bg:'linear-gradient(135deg,#e0f2f1,#b2dfdb)', config: { sections: [
+        { label:'Chart Type', options:['Bar','Donut','Line','Big number'], active:[3] },
+        { label:'Data Points', options:['3','5','7+'], active:[0] },
+      ]}},
+      { id:'ig3', emoji:'🔄', name:'Process Flow', tag:'Step by step', bg:'linear-gradient(135deg,#fff3e0,#ffe0b2)', config: { sections: [
+        { label:'Steps', options:['3 steps','4 steps','5 steps','Timeline'], active:[0] },
+        { label:'Direction', options:['Top to bottom','Left to right','Circular','Branching'], active:[0] },
+        { label:'Connector', options:['Arrows','Lines','Numbers','Icons'], active:[0] },
+      ]}},
+    ],
+  };
+
+  // Old ANGLE_CONFIGS kept for backward compat — now unused
   const ANGLE_CONFIGS = {
     'hero': {
       name: '🎯 Hero Shot', desc: 'Clean, centered product on minimal background. Best for hero banners and landing pages.',
@@ -738,35 +893,61 @@
     document.querySelectorAll('.angle-chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    const cfg = ANGLE_CONFIGS[angleId];
-    if (!cfg) return;
+    const concepts = ANGLE_CONCEPTS[angleId];
+    if (!concepts) return;
 
-    document.getElementById('rAngleName').textContent = cfg.name;
-    document.getElementById('rAngleDesc').textContent = cfg.desc;
+    const grid = document.getElementById('conceptGrid');
+    grid.innerHTML = '';
+
+    concepts.forEach((c, i) => {
+      const card = document.createElement('div');
+      card.className = 'concept-card' + (i === 0 ? ' selected' : '');
+      card.onclick = function() { pickConcept(this, c); };
+      card.innerHTML =
+        '<div class="concept-thumb" style="background:' + c.bg + ';">' + '<span style="font-size:36px;">' + c.emoji + '</span></div>' +
+        '<div class="concept-label"><div class="concept-name">' + c.name + '</div><div class="concept-tag">' + c.tag + '</div></div>';
+      grid.appendChild(card);
+    });
+
+    // Auto-select first concept
+    if (concepts.length > 0) pickConcept(grid.querySelector('.concept-card'), concepts[0]);
+  }
+
+  function pickConcept(card, concept) {
+    document.querySelectorAll('.concept-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+
+    // Update right panel with concept config
+    document.getElementById('rAngleName').textContent = concept.emoji + ' ' + concept.name;
+    document.getElementById('rAngleDesc').textContent = concept.tag;
 
     const container = document.getElementById('rConfig');
     container.innerHTML = '';
 
-    cfg.sections.forEach((sec, si) => {
-      const div = document.createElement('div');
-      div.className = 'r-section';
-      div.innerHTML = '<div class="r-label">' + sec.label + '</div>';
+    if (concept.config && concept.config.sections) {
+      concept.config.sections.forEach(sec => {
+        const div = document.createElement('div');
+        div.className = 'r-section';
+        div.innerHTML = '<div class="r-label">' + sec.label + '</div>';
 
-      const chips = document.createElement('div');
-      chips.className = 'r-chips';
-      sec.options.forEach((opt, oi) => {
-        const c = document.createElement('button');
-        c.className = 'r-chip' + (sec.active.includes(oi) ? ' on' : '');
-        c.textContent = opt;
-        c.onclick = function() { this.classList.toggle('on'); };
-        chips.appendChild(c);
+        const chips = document.createElement('div');
+        chips.className = 'r-chips';
+        sec.options.forEach((opt, oi) => {
+          const c = document.createElement('button');
+          c.className = 'r-chip' + (sec.active.includes(oi) ? ' on' : '');
+          c.textContent = opt;
+          c.onclick = function() {
+            this.parentElement.querySelectorAll('.r-chip').forEach(x => x.classList.remove('on'));
+            this.classList.add('on');
+          };
+          chips.appendChild(c);
+        });
+        div.appendChild(chips);
+        container.appendChild(div);
       });
-      div.appendChild(chips);
-      container.appendChild(div);
-    });
+    }
   }
 
-  // Initialize right panel on load
   function initRightPanel() {
     pickAngle(document.querySelector('.angle-chip.active'), 'hero');
   }

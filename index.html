@@ -118,12 +118,24 @@
   }
   .s5-chip:hover { border-color: #bbb; color: #333; background: #fafafa; }
 
-  .attach-opt {
-    padding: 16px; border-radius: 12px; border: 1.5px solid #eee;
-    background: #fafafa; cursor: pointer; text-align: center;
-    transition: all 100ms;
+  .att-tab {
+    padding: 7px 14px; border-radius: 8px; border: none;
+    background: transparent; font-family: inherit; font-size: 13px;
+    font-weight: 500; cursor: pointer; color: #999; transition: all 100ms;
   }
-  .attach-opt:hover { border-color: #ccc; background: #f5f5f5; transform: translateY(-1px); }
+  .att-tab:hover { background: #f5f5f5; color: #555; }
+  .att-tab.active { background: #1a1a1a; color: #fff; font-weight: 600; }
+
+  .att-creative {
+    padding: 12px; border-radius: 12px; border: 1.5px solid #eee;
+    background: #fafafa; cursor: pointer; text-align: center;
+    transition: all 120ms;
+  }
+  .att-creative:hover { border-color: #ccc; background: #f0f0f0; transform: translateY(-1px); }
+  .att-creative.selected { border-color: #1a1a1a; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .att-cr-thumb { font-size: 32px; margin-bottom: 6px; }
+  .att-cr-name { font-size: 12px; font-weight: 600; }
+  .att-cr-meta { font-size: 10px; color: #aaa; margin-top: 2px; }
 
   .angle-chip {
     padding: 8px 16px; border-radius: 10px; border: 1.5px solid #ddd;
@@ -433,45 +445,113 @@
       </div>
 
       <!-- Attach popup -->
+      <!-- Attach popup (bigger, with tabs for browsing) -->
       <div id="attachMenu" style="display:none; position:fixed; inset:0; z-index:100;">
-        <div onclick="toggleAttachMenu()" style="position:absolute; inset:0; background:rgba(0,0,0,0.3);"></div>
-        <div style="position:absolute; bottom:50%; left:50%; transform:translate(-50%, 50%); width:420px; background:#fff; border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,0.15); padding:24px; font-family:inherit;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="font-size:16px; font-weight:700;">Add to prompt</h3>
-            <button onclick="toggleAttachMenu()" style="background:none; border:none; font-size:18px; cursor:pointer; color:#999;">✕</button>
+        <div onclick="toggleAttachMenu()" style="position:absolute; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px);"></div>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:640px; max-width:calc(100vw - 40px); max-height:85vh; background:#fff; border-radius:20px; box-shadow:0 24px 64px rgba(0,0,0,0.2); display:flex; flex-direction:column; overflow:hidden;">
+
+          <!-- Header with tabs -->
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid #eee;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <button class="att-tab active" onclick="switchAttachTab(this,'upload')">📤 Upload</button>
+              <button class="att-tab" onclick="switchAttachTab(this,'library')">🖼️ Library</button>
+              <button class="att-tab" onclick="switchAttachTab(this,'templates')">📋 Templates</button>
+              <button class="att-tab" onclick="switchAttachTab(this,'brand')">🏷️ Brand Kit</button>
+              <button class="att-tab" onclick="switchAttachTab(this,'url')">🔗 URL</button>
+            </div>
+            <button onclick="toggleAttachMenu()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#999; width:32px; height:32px; border-radius:8px;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="attach-opt" onclick="toggleAttachMenu()">
-              <div style="font-size:22px; margin-bottom:6px;">📤</div>
-              <div style="font-size:13px; font-weight:600;">Upload file</div>
-              <div style="font-size:11px; color:#999;">Image, video, PDF</div>
+
+          <!-- Tab content -->
+          <div style="flex:1; overflow-y:auto; padding:20px 24px;">
+
+            <!-- Upload tab -->
+            <div id="attUpload">
+              <div style="border:2px dashed #ddd; border-radius:14px; padding:48px 32px; text-align:center; cursor:pointer; transition:border-color 150ms;" onmouseover="this.style.borderColor='#bbb'" onmouseout="this.style.borderColor='#ddd'">
+                <div style="font-size:36px; margin-bottom:10px;">📁</div>
+                <div style="font-size:15px; font-weight:600; margin-bottom:4px;">Drop files here or click to browse</div>
+                <div style="font-size:12px; color:#999;">PNG, JPG, MP4, PDF · up to 25 MB</div>
+              </div>
             </div>
-            <div class="attach-opt" onclick="toggleAttachMenu()">
-              <div style="font-size:22px; margin-bottom:6px;">🖼️</div>
-              <div style="font-size:13px; font-weight:600;">From Library</div>
-              <div style="font-size:11px; color:#999;">Pick an existing creative</div>
+
+            <!-- Library tab -->
+            <div id="attLibrary" style="display:none;">
+              <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #e0e0e0; border-radius:10px; margin-bottom:16px;">
+                <span style="color:#bbb;">🔍</span>
+                <input placeholder="Search creatives..." style="flex:1; border:none; outline:none; font-family:inherit; font-size:13px;" />
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">👕</div><div class="att-cr-name">Summer Tee</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">👟</div><div class="att-cr-name">Sneaker Hero</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">🧥</div><div class="att-cr-name">Linen Jacket</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">💄</div><div class="att-cr-name">Lipstick Promo</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">🌸</div><div class="att-cr-name">Spring Coll.</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">🧢</div><div class="att-cr-name">Canvas Cap</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">👜</div><div class="att-cr-name">Tote Bag</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">🎁</div><div class="att-cr-name">Gift Set</div></div>
+              </div>
             </div>
-            <div class="attach-opt" onclick="toggleAttachMenu()">
-              <div style="font-size:22px; margin-bottom:6px;">🔗</div>
-              <div style="font-size:13px; font-weight:600;">Paste URL</div>
-              <div style="font-size:11px; color:#999;">Reference from any link</div>
+
+            <!-- Templates tab -->
+            <div id="attTemplates" style="display:none;">
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">📦</div><div class="att-cr-name">Product Hero</div><div class="att-cr-meta">used 24×</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">⭐</div><div class="att-cr-name">Social Proof</div><div class="att-cr-meta">used 18×</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">⚖️</div><div class="att-cr-name">Before/After</div><div class="att-cr-meta">used 21×</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">✨</div><div class="att-cr-name">Brand Story</div><div class="att-cr-meta">used 9×</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">🔥</div><div class="att-cr-name">Flash Sale</div><div class="att-cr-meta">used 12×</div></div>
+                <div class="att-creative" onclick="selectAttCreative(this)"><div class="att-cr-thumb">🎁</div><div class="att-cr-name">Offer Highlight</div><div class="att-cr-meta">used 11×</div></div>
+              </div>
             </div>
-            <div class="attach-opt" onclick="toggleAttachMenu()">
-              <div style="font-size:22px; margin-bottom:6px;">📋</div>
-              <div style="font-size:13px; font-weight:600;">Use Template</div>
-              <div style="font-size:11px; color:#999;">Start from a saved layout</div>
+
+            <!-- Brand Kit tab -->
+            <div id="attBrand" style="display:none;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="att-creative" onclick="selectAttCreative(this)" style="padding:20px;">
+                  <div style="font-size:24px; margin-bottom:8px;">🎨</div>
+                  <div style="font-size:13px; font-weight:600;">Brand Colors</div>
+                  <div style="display:flex; gap:4px; margin-top:6px;">
+                    <div style="width:18px; height:18px; border-radius:50%; background:#1a1a1a;"></div>
+                    <div style="width:18px; height:18px; border-radius:50%; background:#74BF00;"></div>
+                    <div style="width:18px; height:18px; border-radius:50%; background:#f0f0f0; border:1px solid #ddd;"></div>
+                  </div>
+                </div>
+                <div class="att-creative" onclick="selectAttCreative(this)" style="padding:20px;">
+                  <div style="font-size:24px; margin-bottom:8px;">🔤</div>
+                  <div style="font-size:13px; font-weight:600;">Typography</div>
+                  <div style="font-size:11px; color:#999; margin-top:4px;">Inter · DM Sans</div>
+                </div>
+                <div class="att-creative" onclick="selectAttCreative(this)" style="padding:20px;">
+                  <div style="font-size:24px; margin-bottom:8px;">📄</div>
+                  <div style="font-size:13px; font-weight:600;">Brand Guidelines PDF</div>
+                  <div style="font-size:11px; color:#999; margin-top:4px;">Uploaded 2 weeks ago</div>
+                </div>
+                <div class="att-creative" onclick="selectAttCreative(this)" style="padding:20px;">
+                  <div style="font-size:24px; margin-bottom:8px;">🖼️</div>
+                  <div style="font-size:13px; font-weight:600;">Logo Assets</div>
+                  <div style="font-size:11px; color:#999; margin-top:4px;">4 variants</div>
+                </div>
+              </div>
             </div>
-            <div class="attach-opt" onclick="toggleAttachMenu()">
-              <div style="font-size:22px; margin-bottom:6px;">🏷️</div>
-              <div style="font-size:13px; font-weight:600;">Brand Kit</div>
-              <div style="font-size:11px; color:#999;">Attach brand guidelines</div>
+
+            <!-- URL tab -->
+            <div id="attUrl" style="display:none;">
+              <div style="font-size:14px; font-weight:600; margin-bottom:10px;">Paste a reference URL</div>
+              <div style="display:flex; gap:8px;">
+                <input placeholder="https://example.com/creative.jpg" style="flex:1; padding:12px 14px; border:1.5px solid #ddd; border-radius:10px; font-family:inherit; font-size:14px; outline:none;" />
+                <button style="padding:12px 20px; border-radius:10px; border:none; background:#1a1a1a; color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Fetch</button>
+              </div>
+              <div style="font-size:11px; color:#aaa; margin-top:8px;">Paste any image URL, ad library link, or competitor creative.</div>
             </div>
-            <div class="attach-opt" onclick="toggleAttachMenu()">
-              <div style="font-size:22px; margin-bottom:6px;">📸</div>
-              <div style="font-size:13px; font-weight:600;">Camera</div>
-              <div style="font-size:11px; color:#999;">Take a photo directly</div>
-            </div>
+
           </div>
+
+          <!-- Footer with action -->
+          <div id="attFooter" style="display:none; padding:14px 24px; border-top:1px solid #eee; display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="toggleAttachMenu()" style="padding:10px 20px; border-radius:10px; border:1px solid #ddd; background:#fff; font-family:inherit; font-size:13px; cursor:pointer;">Cancel</button>
+            <button onclick="toggleAttachMenu()" style="padding:10px 20px; border-radius:10px; border:none; background:#1a1a1a; color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Add to prompt</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -647,6 +727,22 @@
   function toggleAttachMenu() {
     const m = document.getElementById('attachMenu');
     m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+  function switchAttachTab(btn, tabId) {
+    document.querySelectorAll('.att-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    ['attUpload','attLibrary','attTemplates','attBrand','attUrl'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    const map = { upload:'attUpload', library:'attLibrary', templates:'attTemplates', brand:'attBrand', url:'attUrl' };
+    document.getElementById(map[tabId]).style.display = 'block';
+    // Show footer for browseable tabs
+    document.getElementById('attFooter').style.display = tabId === 'upload' ? 'none' : 'flex';
+  }
+  function selectAttCreative(el) {
+    el.closest('div[style*="grid"]').querySelectorAll('.att-creative').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('attFooter').style.display = 'flex';
   }
 
   function pickCategory(cat) {

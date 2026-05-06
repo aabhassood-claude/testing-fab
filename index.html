@@ -118,6 +118,19 @@
   }
   .s5-chip:hover { border-color: #bbb; color: #333; background: #fafafa; }
 
+  /* Model dropdown */
+  .model-opt {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    cursor: pointer; transition: background 80ms;
+  }
+  .model-opt:hover { background: #f5f5f5; }
+  .model-opt.active { background: #f0f7ff; }
+  .model-opt-icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+  .model-opt-name { font-size: 13px; font-weight: 600; }
+  .model-opt-desc { font-size: 11px; color: #999; }
+  .model-check { font-size: 14px; color: #1a1a1a; margin-left: auto; display: none; }
+  .model-opt.active .model-check { display: block; }
+
   .att-tab {
     padding: 7px 14px; border-radius: 8px; border: none;
     background: transparent; font-family: inherit; font-size: 13px;
@@ -422,7 +435,41 @@
           <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
             <button onclick="toggleAttachMenu()" style="background:none; border:none; color:#aaa; font-size:20px; cursor:pointer; padding:4px 8px; border-radius:6px; transition:background 100ms;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">+</button>
             <div style="display:flex; align-items:center; gap:10px;">
-              <span style="font-size:13px; color:#bbb;">Genie 1.0 ▾</span>
+              <div style="position:relative;">
+                <button id="modelBtn" onclick="document.getElementById('modelDropdown').style.display = document.getElementById('modelDropdown').style.display === 'none' ? 'block' : 'none'" style="background:none; border:1px solid #e0e0e0; border-radius:8px; padding:6px 12px; font-family:inherit; font-size:13px; color:#666; cursor:pointer; display:flex; align-items:center; gap:6px; transition:border-color 100ms;" onmouseover="this.style.borderColor='#bbb'" onmouseout="this.style.borderColor='#e0e0e0'">
+                  <span id="modelIcon">✨</span>
+                  <span id="modelName">Genie 1.0</span>
+                  <span style="font-size:10px; color:#bbb;">▾</span>
+                </button>
+                <div id="modelDropdown" style="display:none; position:absolute; bottom:44px; right:0; width:260px; background:#fff; border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 12px 36px rgba(0,0,0,0.12); z-index:50; overflow:hidden;">
+                  <div style="padding:10px 14px 6px; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#bbb;">Select AI Model</div>
+                  <div class="model-opt active" onclick="pickModel(this,'✨','Genie 1.0','Fast creative generation')">
+                    <div class="model-opt-icon">✨</div>
+                    <div><div class="model-opt-name">Genie 1.0</div><div class="model-opt-desc">Fast creative generation</div></div>
+                    <span class="model-check">✓</span>
+                  </div>
+                  <div class="model-opt" onclick="pickModel(this,'🚀','Genie 2.0 Pro','Higher quality, slower')">
+                    <div class="model-opt-icon">🚀</div>
+                    <div><div class="model-opt-name">Genie 2.0 Pro</div><div class="model-opt-desc">Higher quality, slower</div></div>
+                    <span class="model-check">✓</span>
+                  </div>
+                  <div class="model-opt" onclick="pickModel(this,'⚡','Genie Flash','Ultra-fast, good enough')">
+                    <div class="model-opt-icon">⚡</div>
+                    <div><div class="model-opt-name">Genie Flash</div><div class="model-opt-desc">Ultra-fast, good enough</div></div>
+                    <span class="model-check">✓</span>
+                  </div>
+                  <div class="model-opt" onclick="pickModel(this,'🎬','Genie Video','Motion & video gen')">
+                    <div class="model-opt-icon">🎬</div>
+                    <div><div class="model-opt-name">Genie Video</div><div class="model-opt-desc">Motion & video gen</div></div>
+                    <span class="model-check">✓</span>
+                  </div>
+                  <div class="model-opt" onclick="pickModel(this,'🧪','Genie Labs','Experimental, beta features')">
+                    <div class="model-opt-icon">🧪</div>
+                    <div><div class="model-opt-name">Genie Labs</div><div class="model-opt-desc">Experimental, beta features</div></div>
+                    <span class="model-check">✓</span>
+                  </div>
+                </div>
+              </div>
               <button onclick="generateFromPrompt()" style="width:36px; height:36px; border-radius:10px; border:none; background:#1a1a1a; color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Generate">▶</button>
             </div>
           </div>
@@ -723,6 +770,20 @@
   function initRightPanel() {
     pickAngle(document.querySelector('.angle-chip.active'), 'hero');
   }
+
+  function pickModel(opt, icon, name) {
+    document.querySelectorAll('.model-opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    document.getElementById('modelIcon').textContent = icon;
+    document.getElementById('modelName').textContent = name;
+    document.getElementById('modelDropdown').style.display = 'none';
+  }
+  // Close model dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#modelBtn') && !e.target.closest('#modelDropdown')) {
+      document.getElementById('modelDropdown').style.display = 'none';
+    }
+  });
 
   function toggleAttachMenu() {
     const m = document.getElementById('attachMenu');

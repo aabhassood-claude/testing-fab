@@ -170,6 +170,53 @@
   }
   .add-new-btn:hover { border-color: #bbb; color: #666; }
 
+  /* Approach cards */
+  .approach-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .approach-card {
+    padding: 28px; border-radius: 14px; border: 2px solid #e8e8e8;
+    background: #fff; cursor: pointer; transition: all 150ms; position: relative;
+  }
+  .approach-card:hover { border-color: #ccc; transform: translateY(-2px); }
+  .approach-card.active { border-color: #1a1a1a; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .approach-icon { font-size: 32px; margin-bottom: 12px; }
+  .approach-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 6px;
+    background: #f0fdf4; color: #16a34a; font-size: 10px; font-weight: 600;
+    margin-bottom: 10px; letter-spacing: 0.5px;
+  }
+  .approach-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .approach-desc { font-size: 13px; color: #777; line-height: 1.5; margin-bottom: 14px; }
+  .approach-features { list-style: none; padding: 0; }
+  .approach-features li {
+    font-size: 12px; color: #888; padding: 4px 0; padding-left: 18px; position: relative;
+  }
+  .approach-features li::before { content: '✓'; position: absolute; left: 0; color: #aaa; font-size: 11px; }
+
+  /* Reference upload area */
+  .ref-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
+  .ref-options { display: flex; gap: 8px; margin-bottom: 16px; }
+  .ref-option {
+    padding: 8px 16px; border-radius: 8px; border: 1.5px solid #e0e0e0;
+    font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; transition: all 100ms;
+  }
+  .ref-option:hover { border-color: #ccc; }
+  .ref-option.active { border-color: #1a1a1a; background: #fafafa; }
+  .ref-dropzone {
+    border: 2px dashed #ddd; border-radius: 12px; padding: 32px; text-align: center;
+    cursor: pointer; transition: border-color 120ms; margin-bottom: 20px;
+  }
+  .ref-dropzone:hover { border-color: #bbb; }
+  .ref-dropzone-icon { font-size: 28px; margin-bottom: 8px; }
+  .ref-dropzone-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .ref-dropzone-hint { font-size: 11px; color: #aaa; }
+  .ref-sliders { margin-bottom: 16px; }
+  .ref-slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .ref-slider-label { font-size: 12px; font-weight: 600; min-width: 130px; }
+  .ref-range { flex: 1; }
+  .ref-slider-val { font-size: 12px; color: #888; min-width: 60px; }
+  .ref-checkboxes { display: flex; gap: 16px; }
+  .ref-check { font-size: 12px; color: #666; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
   .step-page { }
 
   @media (max-width: 768px) {
@@ -429,10 +476,95 @@
 
 <!-- Continue to generate -->
 <div class="continue-bar">
-  <button class="continue-btn" onclick="alert('Step 3: Generate — coming soon')">Continue → Generate</button>
+  <button class="continue-btn" onclick="goToStep3()">Continue → Choose Approach</button>
 </div>
 
 </div><!-- close step2 -->
+
+<!-- ================================ -->
+<!-- STEP 3: From Scratch or Reference -->
+<!-- ================================ -->
+<div class="page step-page" id="step3" style="display:none;">
+
+<div class="steps-bar">
+  <div class="step-dot done" data-step="1"><span>✓</span> Category & Format</div>
+  <div class="step-line done"></div>
+  <div class="step-dot done" data-step="2"><span>✓</span> Product or Category</div>
+  <div class="step-line done"></div>
+  <div class="step-dot active" data-step="3"><span>3</span> Generate</div>
+</div>
+
+<button class="back-btn" onclick="goBackToStep2()">← Back</button>
+
+<h1>How do you want to create?</h1>
+<p class="subtitle">Start fresh with a prompt, or use an existing creative as a reference to build variations.</p>
+
+<div class="approach-cards">
+
+  <!-- From Scratch -->
+  <div class="approach-card active" onclick="selectApproach(this, 'scratch')">
+    <div class="approach-icon">✨</div>
+    <div class="approach-badge">Recommended</div>
+    <h3 class="approach-title">From Scratch</h3>
+    <p class="approach-desc">Describe what you want — Genie generates completely new creatives from your prompt, brand context, and selected mode.</p>
+    <ul class="approach-features">
+      <li>Write a prompt or use AI suggestions</li>
+      <li>Pick a strategy (optional)</li>
+      <li>Choose vibes & style direction</li>
+      <li>Set number of variations</li>
+    </ul>
+  </div>
+
+  <!-- Reference / Variation -->
+  <div class="approach-card" onclick="selectApproach(this, 'reference')">
+    <div class="approach-icon">🔄</div>
+    <div class="approach-badge" style="background:#eef4fd; color:#3b82f6;">Iterate</div>
+    <h3 class="approach-title">Reference / Variation</h3>
+    <p class="approach-desc">Upload or pick an existing creative — Genie creates variations that keep the feel but explore new angles.</p>
+    <ul class="approach-features">
+      <li>Upload an image or pick from library</li>
+      <li>Choose what to keep (layout, colors, copy)</li>
+      <li>Adjust intensity of variation</li>
+      <li>Generate multiple alternatives</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Reference upload area (shown when Reference is selected) -->
+<div id="referenceUpload" style="display:none;">
+  <div class="ref-label">Reference creative</div>
+  <div class="ref-options">
+    <div class="ref-option active" onclick="selectRefSource(this, 'upload')">📤 Upload file</div>
+    <div class="ref-option" onclick="selectRefSource(this, 'library')">🖼️ Pick from Library</div>
+    <div class="ref-option" onclick="selectRefSource(this, 'url')">🔗 Paste URL</div>
+  </div>
+  <div class="ref-dropzone" onclick="document.getElementById('refFileInput').click()">
+    <div class="ref-dropzone-icon">📁</div>
+    <div class="ref-dropzone-title">Drop your reference here or click to browse</div>
+    <div class="ref-dropzone-hint">PNG, JPG, MP4 · up to 25 MB</div>
+    <input type="file" id="refFileInput" accept="image/*,video/*" style="display:none;" />
+  </div>
+  <div class="ref-sliders">
+    <div class="ref-slider-row">
+      <span class="ref-slider-label">Variation intensity</span>
+      <input type="range" min="1" max="5" value="3" class="ref-range" />
+      <span class="ref-slider-val">Medium</span>
+    </div>
+    <div class="ref-checkboxes">
+      <label class="ref-check"><input type="checkbox" checked /> Keep layout</label>
+      <label class="ref-check"><input type="checkbox" checked /> Keep colors</label>
+      <label class="ref-check"><input type="checkbox" /> Keep copy/text</label>
+    </div>
+  </div>
+</div>
+
+<!-- Continue -->
+<div class="continue-bar">
+  <button class="continue-btn" onclick="alert('🚀 Generating creatives...')">✨ Generate Creatives</button>
+</div>
+
+</div><!-- close step3 -->
 
 <script>
   function selectCat(card) {
@@ -468,6 +600,27 @@
       const name = c.querySelector('.pc-name').textContent.toLowerCase();
       c.style.display = name.includes(q) ? '' : 'none';
     });
+  }
+
+  // Step 3
+  function goToStep3() {
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function goBackToStep2() {
+    document.getElementById('step3').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function selectApproach(card, type) {
+    document.querySelectorAll('.approach-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    document.getElementById('referenceUpload').style.display = type === 'reference' ? 'block' : 'none';
+  }
+  function selectRefSource(btn, src) {
+    document.querySelectorAll('.ref-option').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 
   function selectFormat(btn, fmt) {

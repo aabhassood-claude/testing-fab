@@ -150,6 +150,43 @@
   .att-cr-name { font-size: 12px; font-weight: 600; }
   .att-cr-meta { font-size: 10px; color: #aaa; margin-top: 2px; }
 
+  /* Sticky prompt bar */
+  .sticky-prompt {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(245,245,240,0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 16px 32px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    transition: box-shadow 200ms;
+  }
+
+  /* View toggle */
+  .view-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid #ddd;
+    background: #fff; font-size: 14px; cursor: pointer; color: #aaa;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .view-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  /* Generated creative cards */
+  .gen-creative {
+    border-radius: 12px; border: 1.5px solid #e0e0e0; background: #fff;
+    overflow: hidden; cursor: pointer; transition: all 120ms;
+  }
+  .gen-creative:hover { border-color: #bbb; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+  .gen-creative-thumb {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 42px; position: relative;
+  }
+  .gen-creative-info { padding: 10px 12px; }
+  .gen-creative-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .gen-creative-meta { font-size: 10px; color: #999; }
+  .gen-creative-badge {
+    position: absolute; top: 8px; left: 8px; padding: 2px 8px;
+    border-radius: 6px; font-size: 9px; font-weight: 600; letter-spacing: 0.3px;
+  }
+
   /* Concept cards */
   .concept-card {
     border-radius: 12px; border: 2px solid #e8e8e8; background: #fff;
@@ -422,21 +459,20 @@
   </div>
 </div>
 
-<!-- ======== STEP 5: Prompt Screen (centered, Claude-style) ======== -->
+<!-- ======== STEP 5: Prompt Screen ======== -->
 <div id="step5" style="display:none; min-height:100vh; background:#f5f5f0; color:#1a1a1a; font-family:'Inter',system-ui,sans-serif;">
   <div style="display:grid; grid-template-columns:1fr 340px; min-height:100vh;">
 
-    <!-- LEFT: Centered prompt -->
-    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px 40px; position:relative;">
+    <!-- LEFT: Prompt + creatives scroll area -->
+    <div style="display:flex; flex-direction:column; position:relative; overflow-y:auto; height:100vh;">
 
-      <!-- Back (top left) -->
-      <button onclick="showStep('step4')" style="position:absolute; top:24px; left:24px; background:none; border:none; color:#aaa; font-family:inherit; font-size:13px; cursor:pointer;">← Back</button>
-
-      <!-- Greeting -->
-      <div style="text-align:center; margin-bottom:40px;">
-        <div style="font-size:36px; margin-bottom:12px;">✨</div>
-        <h1 style="font-size:32px; font-weight:700; color:#1a1a1a; margin-bottom:0;">What are you creating?</h1>
-      </div>
+      <!-- Sticky prompt bar (goes to top on scroll) -->
+      <div id="stickyPrompt" class="sticky-prompt">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+          <button onclick="showStep('step4')" style="background:none; border:none; color:#aaa; font-family:inherit; font-size:13px; cursor:pointer;">← Back</button>
+          <span style="font-size:14px; font-weight:600; flex:1; text-align:center;">✨ What are you creating?</span>
+          <div style="width:50px;"></div>
+        </div>
 
       <!-- Prompt box -->
       <div style="width:100%; max-width:620px;">
@@ -511,6 +547,21 @@
           <div id="conceptGrid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
             <!-- Populated by pickAngle() -->
           </div>
+        </div>
+      </div>
+      </div><!-- end sticky prompt -->
+
+      <!-- Scrollable creatives grid below prompt -->
+      <div style="padding:20px 32px 48px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <div style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#aaa;">Generated Creatives <span id="creativeCount" style="color:#ccc;">· 12 results</span></div>
+          <div style="display:flex; gap:6px;">
+            <button class="view-btn active" onclick="setView(this,'grid')">▦</button>
+            <button class="view-btn" onclick="setView(this,'list')">☰</button>
+          </div>
+        </div>
+        <div id="creativesArea" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <!-- Sample generated creatives -->
         </div>
       </div>
 
@@ -950,6 +1001,42 @@
 
   function initRightPanel() {
     pickAngle(document.querySelector('.angle-chip.active'), 'hero');
+    populateCreatives();
+  }
+
+  function populateCreatives() {
+    const names = ['Summer Tee Hero','Sneaker Lifestyle','Flash Banner','Product Demo','Social Card','Before/After','Brand Story','Offer Promo','UGC Review','Comparison Grid','Holiday Set','Lipstick Ad'];
+    const emojis = ['👕','👟','🔥','📦','⭐','⚖️','✨','🎁','📱','📊','🎄','💄'];
+    const bgs = ['#fef9ef','#eef8e8','#ffebee','#e8eaf6','#fffde7','#f3e5f5','#e0f7fa','#fff3e0','#fce4ec','#e8f5e9','#f1f8e9','#fce4ec'];
+    const types = ['Image','Image','Image','Video','Image','Image','Image','Image','Video','Image','Image','Image'];
+    const area = document.getElementById('creativesArea');
+    area.innerHTML = '';
+    for (let i = 0; i < 12; i++) {
+      const card = document.createElement('div');
+      card.className = 'gen-creative';
+      card.innerHTML =
+        '<div class="gen-creative-thumb" style="background:' + bgs[i] + ';">' +
+          '<span class="gen-creative-badge" style="background:' + (types[i]==='Video' ? '#1a1a1a;color:#fff' : '#fff;color:#333;border:1px solid #ddd') + ';">' + (types[i]==='Video' ? '🎬 Video' : '🖼 Image') + '</span>' +
+          emojis[i] +
+        '</div>' +
+        '<div class="gen-creative-info">' +
+          '<div class="gen-creative-name">' + names[i] + '</div>' +
+          '<div class="gen-creative-meta">Concept ' + (i+1) + ' · just now</div>' +
+        '</div>';
+      area.appendChild(card);
+    }
+    document.getElementById('creativeCount').textContent = '· ' + 12 + ' results';
+  }
+
+  function setView(btn, mode) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const area = document.getElementById('creativesArea');
+    if (mode === 'list') {
+      area.style.gridTemplateColumns = '1fr';
+    } else {
+      area.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))';
+    }
   }
 
   function pickModel(opt, icon, name) {

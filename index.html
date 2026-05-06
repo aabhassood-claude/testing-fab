@@ -551,19 +551,6 @@
       </div>
       </div><!-- end sticky prompt -->
 
-      <!-- Scrollable creatives grid below prompt -->
-      <div style="padding:20px 32px 48px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <div style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#aaa;">Generated Creatives <span id="creativeCount" style="color:#ccc;">· 12 results</span></div>
-          <div style="display:flex; gap:6px;">
-            <button class="view-btn active" onclick="setView(this,'grid')">▦</button>
-            <button class="view-btn" onclick="setView(this,'list')">☰</button>
-          </div>
-        </div>
-        <div id="creativesArea" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
-          <!-- Sample generated creatives -->
-        </div>
-      </div>
 
       <!-- Attach popup -->
       <!-- Attach popup (bigger, with tabs for browsing) -->
@@ -1001,42 +988,6 @@
 
   function initRightPanel() {
     pickAngle(document.querySelector('.angle-chip.active'), 'hero');
-    populateCreatives();
-  }
-
-  function populateCreatives() {
-    const names = ['Summer Tee Hero','Sneaker Lifestyle','Flash Banner','Product Demo','Social Card','Before/After','Brand Story','Offer Promo','UGC Review','Comparison Grid','Holiday Set','Lipstick Ad'];
-    const emojis = ['👕','👟','🔥','📦','⭐','⚖️','✨','🎁','📱','📊','🎄','💄'];
-    const bgs = ['#fef9ef','#eef8e8','#ffebee','#e8eaf6','#fffde7','#f3e5f5','#e0f7fa','#fff3e0','#fce4ec','#e8f5e9','#f1f8e9','#fce4ec'];
-    const types = ['Image','Image','Image','Video','Image','Image','Image','Image','Video','Image','Image','Image'];
-    const area = document.getElementById('creativesArea');
-    area.innerHTML = '';
-    for (let i = 0; i < 12; i++) {
-      const card = document.createElement('div');
-      card.className = 'gen-creative';
-      card.innerHTML =
-        '<div class="gen-creative-thumb" style="background:' + bgs[i] + ';">' +
-          '<span class="gen-creative-badge" style="background:' + (types[i]==='Video' ? '#1a1a1a;color:#fff' : '#fff;color:#333;border:1px solid #ddd') + ';">' + (types[i]==='Video' ? '🎬 Video' : '🖼 Image') + '</span>' +
-          emojis[i] +
-        '</div>' +
-        '<div class="gen-creative-info">' +
-          '<div class="gen-creative-name">' + names[i] + '</div>' +
-          '<div class="gen-creative-meta">Concept ' + (i+1) + ' · just now</div>' +
-        '</div>';
-      area.appendChild(card);
-    }
-    document.getElementById('creativeCount').textContent = '· ' + 12 + ' results';
-  }
-
-  function setView(btn, mode) {
-    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const area = document.getElementById('creativesArea');
-    if (mode === 'list') {
-      area.style.gridTemplateColumns = '1fr';
-    } else {
-      area.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))';
-    }
   }
 
   function pickModel(opt, icon, name) {

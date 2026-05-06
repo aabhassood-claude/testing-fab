@@ -343,155 +343,20 @@
   </div>
 </div>
 
-<!-- ======== STEP 5: Generation Screen ======== -->
-<div id="step5" style="display:none; min-height:100vh; background:#000; color:#fff; font-family:'Inter',system-ui,sans-serif; position:relative; overflow:hidden;">
-
-  <!-- Faint grid background -->
-  <div style="position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size:32px 32px; pointer-events:none;"></div>
-
-  <!-- Scanline effect -->
-  <div style="position:absolute; left:0; right:0; height:80px; background:linear-gradient(180deg,transparent,rgba(116,191,0,0.04),transparent); animation:scanline 8s linear infinite; pointer-events:none;"></div>
-  <style>@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}</style>
-
-  <div style="max-width:640px; margin:0 auto; padding:80px 32px; position:relative; z-index:1; text-align:center;">
-
-    <!-- Back -->
-    <button onclick="showStep('step4')" style="background:none; border:none; color:#666; font-family:inherit; font-size:13px; cursor:pointer; margin-bottom:40px; display:block;">← Back to settings</button>
-
-    <!-- Spinner -->
-    <div id="genSpinner" style="margin:0 auto 32px;">
-      <div style="width:56px; height:56px; border:3px solid #222; border-top:3px solid #74BF00; border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto;"></div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-    </div>
-
-    <!-- Status text -->
-    <h2 id="genTitle" style="font-size:24px; font-weight:700; margin-bottom:8px;">Generating your creatives…</h2>
-    <p id="genSub" style="font-size:14px; color:#666; margin-bottom:40px;">This usually takes 15–30 seconds.</p>
-
-    <!-- Progress steps -->
-    <div id="genSteps" style="text-align:left; max-width:360px; margin:0 auto;">
-      <div class="gen-step" data-i="0" style="display:flex; align-items:center; gap:12px; padding:8px 0; font-size:13px;">
-        <div class="gen-check" style="width:20px; height:20px; border-radius:50%; border:1.5px solid #333; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0;"></div>
-        <span style="color:#666;">Reading your selections</span>
-      </div>
-      <div class="gen-step" data-i="1" style="display:flex; align-items:center; gap:12px; padding:8px 0; font-size:13px;">
-        <div class="gen-check" style="width:20px; height:20px; border-radius:50%; border:1.5px solid #333; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0;"></div>
-        <span style="color:#666;">Applying brand context & style</span>
-      </div>
-      <div class="gen-step" data-i="2" style="display:flex; align-items:center; gap:12px; padding:8px 0; font-size:13px;">
-        <div class="gen-check" style="width:20px; height:20px; border-radius:50%; border:1.5px solid #333; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0;"></div>
-        <span style="color:#666;">Rendering variations</span>
-      </div>
-      <div class="gen-step" data-i="3" style="display:flex; align-items:center; gap:12px; padding:8px 0; font-size:13px;">
-        <div class="gen-check" style="width:20px; height:20px; border-radius:50%; border:1.5px solid #333; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0;"></div>
-        <span style="color:#666;">Finalizing & saving to library</span>
-      </div>
-    </div>
-
-    <!-- Terminal-style log (appears during generation) -->
-    <div id="genLog" style="margin-top:40px; text-align:left; max-width:440px; margin-left:auto; margin-right:auto; background:#0a0a0a; border:1px solid #1a1a1a; border-radius:10px; padding:16px; font-family:'Fira Code',monospace; font-size:11px; color:#555; line-height:1.8; display:none;">
-      <div style="color:#74BF00;">$ genie generate --mode=<span id="logMode">asset</span></div>
-      <div id="logLines"></div>
-      <div style="color:#74BF00;"><span class="term-cursor" style="animation:blink 1s steps(1) infinite;">▌</span></div>
-      <style>@keyframes blink{50%{opacity:0}}</style>
-    </div>
-
-    <!-- Done state (hidden initially) -->
-    <div id="genDone" style="display:none; margin-top:20px;">
-      <div style="width:64px; height:64px; border-radius:50%; background:#74BF00; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:28px; color:#000;">✓</div>
-      <h2 style="font-size:22px; font-weight:700; margin-bottom:6px;">Creatives ready!</h2>
-      <p style="font-size:13px; color:#888; margin-bottom:28px;">4 creatives generated and saved to your library.</p>
-      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <button onclick="showStep('step1')" style="padding:12px 24px; border-radius:10px; border:1.5px solid #333; background:transparent; color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">✨ Generate more</button>
-        <button style="padding:12px 24px; border-radius:10px; border:none; background:#74BF00; color:#000; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;">🖼 View in Library →</button>
-      </div>
-    </div>
-
+<!-- ======== STEP 5: Blank Screen (ready for content) ======== -->
+<div id="step5" style="display:none; min-height:100vh; background:#000; color:#fff; font-family:'Inter',system-ui,sans-serif;">
+  <div style="max-width:960px; margin:0 auto; padding:48px 32px;">
+    <button onclick="showStep('step4')" style="background:none; border:none; color:#666; font-family:inherit; font-size:13px; cursor:pointer; margin-bottom:24px;">← Back</button>
   </div>
 </div>
 
 <script>
   let chosen = { cat: '', fmt: '', product: '' };
 
-  let genTimer = null;
-
   function showStep(id) {
     document.querySelectorAll('.page, #step5').forEach(p => p.style.display = 'none');
-    document.getElementById(id).style.display = id === 'step5' ? 'block' : 'block';
+    document.getElementById(id).style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (id === 'step5') startGeneration();
-  }
-
-  function startGeneration() {
-    // Reset
-    document.getElementById('genSpinner').style.display = 'block';
-    document.getElementById('genDone').style.display = 'none';
-    document.getElementById('genTitle').textContent = 'Generating your creatives…';
-    document.getElementById('genSub').style.display = 'block';
-    document.getElementById('genLog').style.display = 'block';
-    document.getElementById('logLines').innerHTML = '';
-    document.getElementById('logMode').textContent = (chosen.cat || 'asset').toLowerCase();
-
-    const steps = document.querySelectorAll('.gen-step');
-    steps.forEach(s => {
-      const check = s.querySelector('.gen-check');
-      check.style.background = 'transparent';
-      check.style.borderColor = '#333';
-      check.innerHTML = '';
-      s.querySelector('span').style.color = '#666';
-    });
-
-    const logs = [
-      'Initializing pipeline...',
-      'Loading brand profile: ' + (chosen.cat || 'Asset'),
-      'Format: ' + (chosen.fmt || 'Image'),
-      'Fetching product context...',
-      'Applying style tokens...',
-      'Rendering variant 1/4...',
-      'Rendering variant 2/4...',
-      'Rendering variant 3/4...',
-      'Rendering variant 4/4...',
-      'Saving to creative library...',
-      'Done ✓',
-    ];
-
-    let stepIdx = 0;
-    let logIdx = 0;
-
-    // Tick steps
-    const stepInterval = setInterval(() => {
-      if (stepIdx >= steps.length) { clearInterval(stepInterval); return; }
-      const s = steps[stepIdx];
-      const check = s.querySelector('.gen-check');
-      check.style.background = '#74BF00';
-      check.style.borderColor = '#74BF00';
-      check.innerHTML = '✓';
-      check.style.color = '#000';
-      s.querySelector('span').style.color = '#fff';
-      stepIdx++;
-    }, 1200);
-
-    // Tick logs
-    const logInterval = setInterval(() => {
-      if (logIdx >= logs.length) {
-        clearInterval(logInterval);
-        // Show done state
-        setTimeout(() => {
-          document.getElementById('genSpinner').style.display = 'none';
-          document.getElementById('genTitle').style.display = 'none';
-          document.getElementById('genSub').style.display = 'none';
-          document.getElementById('genLog').style.display = 'none';
-          document.querySelectorAll('.gen-step').forEach(s => s.style.display = 'none');
-          document.getElementById('genDone').style.display = 'block';
-        }, 600);
-        return;
-      }
-      const line = document.createElement('div');
-      line.textContent = '→ ' + logs[logIdx];
-      line.style.color = logIdx === logs.length - 1 ? '#74BF00' : '#555';
-      document.getElementById('logLines').appendChild(line);
-      logIdx++;
-    }, 500);
   }
 
   function pickCategory(cat) {

@@ -110,6 +110,44 @@
   .gen-btn { padding: 14px 36px; border-radius: 12px; border: none; background: #1a1a1a; color: #fff; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 120ms; display: inline-flex; align-items: center; gap: 8px; }
   .gen-btn:hover { background: #333; }
 
+  /* Step 5: prompt screen */
+  .suggest-chip {
+    padding: 6px 12px; border-radius: 8px; border: 1px solid #222;
+    background: #111; color: #888; font-family: inherit; font-size: 12px;
+    cursor: pointer; transition: all 100ms;
+  }
+  .suggest-chip:hover { border-color: #444; color: #ccc; }
+
+  .panel-section { }
+  .panel-label { font-size: 11px; font-weight: 600; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .panel-value { font-size: 13px; color: #ccc; font-weight: 500; }
+
+  .strat-chip, .vibe-chip {
+    padding: 6px 12px; border-radius: 8px; border: 1px solid #222;
+    background: transparent; color: #666; font-family: inherit; font-size: 12px;
+    cursor: pointer; transition: all 100ms;
+  }
+  .strat-chip:hover, .vibe-chip:hover { border-color: #444; color: #aaa; }
+  .strat-chip.active { background: #74BF00; color: #000; border-color: #74BF00; font-weight: 600; }
+  .vibe-chip.active { background: #1a1a1a; color: #fff; border-color: #444; }
+
+  .ratio-btn {
+    padding: 6px 14px; border-radius: 8px; border: 1px solid #222;
+    background: transparent; color: #666; font-family: inherit; font-size: 12px;
+    cursor: pointer; transition: all 100ms; font-weight: 500;
+  }
+  .ratio-btn:hover { border-color: #444; color: #aaa; }
+  .ratio-btn.active { background: #fff; color: #000; border-color: #fff; font-weight: 600; }
+
+  .tpl-mini {
+    width: 60px; height: 56px; border-radius: 8px; border: 1.5px solid #222;
+    background: #0a0a0a; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 100ms;
+    color: #666;
+  }
+  .tpl-mini:hover { border-color: #444; }
+  .tpl-mini.active { border-color: #fff; background: #1a1a1a; color: #fff; }
+
   @media (max-width: 768px) {
     .big-cards, .approach-cards { grid-template-columns: 1fr; }
     .quick-modes { grid-template-columns: 1fr 1fr; }
@@ -343,10 +381,163 @@
   </div>
 </div>
 
-<!-- ======== STEP 5: Blank Screen (ready for content) ======== -->
-<div id="step5" style="display:none; min-height:100vh; background:#000; color:#fff; font-family:'Inter',system-ui,sans-serif;">
-  <div style="max-width:960px; margin:0 auto; padding:48px 32px;">
-    <button onclick="showStep('step4')" style="background:none; border:none; color:#666; font-family:inherit; font-size:13px; cursor:pointer; margin-bottom:24px;">← Back</button>
+<!-- ======== STEP 5: Prompt + Right Panel ======== -->
+<div id="step5" style="display:none; min-height:100vh; background:#0a0a0a; color:#fff; font-family:'Inter',system-ui,sans-serif;">
+  <div style="display:grid; grid-template-columns:1fr 340px; min-height:100vh;">
+
+    <!-- LEFT: Prompt area -->
+    <div style="display:flex; flex-direction:column; padding:32px 40px;">
+
+      <!-- Top bar -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:32px;">
+        <button onclick="showStep('step4')" style="background:none; border:none; color:#555; font-family:inherit; font-size:13px; cursor:pointer;">← Back to settings</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="s5cat" style="padding:4px 10px; border-radius:6px; background:#1a1a1a; border:1px solid #333; font-size:11px; color:#888;">Asset</span>
+          <span id="s5fmt" style="padding:4px 10px; border-radius:6px; background:#1a1a1a; border:1px solid #333; font-size:11px; color:#888;">Image</span>
+        </div>
+      </div>
+
+      <!-- Canvas / preview area -->
+      <div style="flex:1; display:flex; align-items:center; justify-content:center; border:1px solid #1a1a1a; border-radius:16px; background:#0f0f0f; margin-bottom:24px; min-height:360px; position:relative;">
+        <div id="previewEmpty" style="text-align:center; color:#333;">
+          <div style="font-size:48px; margin-bottom:12px;">✨</div>
+          <div style="font-size:15px; font-weight:600; color:#444;">Your creative will appear here</div>
+          <div style="font-size:12px; color:#333; margin-top:4px;">Write a prompt below to generate</div>
+        </div>
+      </div>
+
+      <!-- Prompt bar -->
+      <div style="position:relative;">
+        <div style="display:flex; align-items:flex-end; gap:10px; padding:14px 16px; background:#111; border:1.5px solid #222; border-radius:14px; transition:border-color 150ms;" id="promptBar" onfocus="this.style.borderColor='#74BF00'" onblur="this.style.borderColor='#222'">
+          <button style="background:none; border:none; color:#444; font-size:18px; cursor:pointer; padding:4px;" title="Attach">+</button>
+          <textarea id="promptInput" rows="1" placeholder="Describe what you want to create..."
+            style="flex:1; background:transparent; border:none; outline:none; color:#fff; font-family:inherit; font-size:14px; resize:none; line-height:1.5; max-height:120px;"
+            oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';"
+          ></textarea>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="width:24px; height:24px; border-radius:50%; background:#1a1a1a; border:1px solid #333; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer;" title="AI Suggest">💡</span>
+            <span style="width:24px; height:24px; border-radius:50%; background:#1a1a1a; border:1px solid #333; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer;" title="Templates">📋</span>
+          </div>
+          <button onclick="generateFromPrompt()" style="width:38px; height:38px; border-radius:50%; border:none; background:#74BF00; color:#000; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;" title="Generate">▶</button>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <button class="suggest-chip" onclick="fillPrompt('Summer product shoot, minimal white background, soft shadows')">☀️ Summer shoot</button>
+          <button class="suggest-chip" onclick="fillPrompt('Bold sale banner with urgency, red accents, countdown timer')">🔥 Sale banner</button>
+          <button class="suggest-chip" onclick="fillPrompt('Lifestyle scene, person using product outdoors, golden hour')">🌅 Lifestyle</button>
+          <button class="suggest-chip" onclick="fillPrompt('Before/after comparison, split layout, clean typography')">⚖️ Before/After</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Dynamic settings panel -->
+    <div style="background:#111; border-left:1px solid #1a1a1a; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:20px;">
+
+      <!-- Summary header -->
+      <div>
+        <div style="font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#555; margin-bottom:8px;">Generation Settings</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;" id="settingsTags">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+      <div style="height:1px; background:#1a1a1a;"></div>
+
+      <!-- Mode -->
+      <div class="panel-section">
+        <div class="panel-label">Mode</div>
+        <div id="panelMode" class="panel-value">Brand-focused</div>
+      </div>
+
+      <!-- Strategy -->
+      <div class="panel-section">
+        <div class="panel-label">Strategy <span style="color:#333; font-weight:400;">(optional)</span></div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button class="strat-chip active" onclick="pickStrat(this)">Social Proof</button>
+          <button class="strat-chip" onclick="pickStrat(this)">Before/After</button>
+          <button class="strat-chip" onclick="pickStrat(this)">Urgency</button>
+          <button class="strat-chip" onclick="pickStrat(this)">Product Focus</button>
+          <button class="strat-chip" onclick="pickStrat(this)">Brand Story</button>
+        </div>
+      </div>
+
+      <!-- Vibes -->
+      <div class="panel-section">
+        <div class="panel-label">Vibes</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button class="vibe-chip active" onclick="this.classList.toggle('active')">Minimal</button>
+          <button class="vibe-chip" onclick="this.classList.toggle('active')">Bold</button>
+          <button class="vibe-chip" onclick="this.classList.toggle('active')">Warm</button>
+          <button class="vibe-chip active" onclick="this.classList.toggle('active')">Clean</button>
+          <button class="vibe-chip" onclick="this.classList.toggle('active')">Playful</button>
+          <button class="vibe-chip" onclick="this.classList.toggle('active')">Premium</button>
+        </div>
+      </div>
+
+      <!-- Aspect ratio -->
+      <div class="panel-section">
+        <div class="panel-label">Aspect ratio</div>
+        <div style="display:flex; gap:6px;">
+          <button class="ratio-btn active" onclick="pickRatio(this)">1:1</button>
+          <button class="ratio-btn" onclick="pickRatio(this)">4:5</button>
+          <button class="ratio-btn" onclick="pickRatio(this)">9:16</button>
+          <button class="ratio-btn" onclick="pickRatio(this)">16:9</button>
+          <button class="ratio-btn" onclick="pickRatio(this)">Custom</button>
+        </div>
+      </div>
+
+      <!-- Variations -->
+      <div class="panel-section">
+        <div class="panel-label">Variations</div>
+        <div style="display:flex; gap:6px;">
+          <button class="ratio-btn" onclick="pickVar(this)">1</button>
+          <button class="ratio-btn active" onclick="pickVar(this)">4</button>
+          <button class="ratio-btn" onclick="pickVar(this)">8</button>
+          <button class="ratio-btn" onclick="pickVar(this)">Custom</button>
+        </div>
+      </div>
+
+      <!-- Brand -->
+      <div class="panel-section">
+        <div class="panel-label">Brand</div>
+        <select style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #222; background:#0a0a0a; color:#ccc; font-family:inherit; font-size:13px;">
+          <option>test — 24 products · Apparel</option>
+          <option>Glossier — 12 products · Beauty</option>
+          <option>+ Add new brand</option>
+        </select>
+      </div>
+
+      <!-- Template -->
+      <div class="panel-section">
+        <div class="panel-label">Template <span style="color:#333; font-weight:400;">(optional)</span></div>
+        <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
+          <div class="tpl-mini active" onclick="pickTpl(this)">
+            <div style="font-size:11px; font-weight:600;">None</div>
+          </div>
+          <div class="tpl-mini" onclick="pickTpl(this)">
+            <div style="font-size:16px;">👕</div>
+            <div style="font-size:10px;">Hero</div>
+          </div>
+          <div class="tpl-mini" onclick="pickTpl(this)">
+            <div style="font-size:16px;">⭐</div>
+            <div style="font-size:10px;">Social</div>
+          </div>
+          <div class="tpl-mini" onclick="pickTpl(this)">
+            <div style="font-size:16px;">⚖️</div>
+            <div style="font-size:10px;">Compare</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credits -->
+      <div style="margin-top:auto; padding-top:16px; border-top:1px solid #1a1a1a;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:12px; color:#555;">⚡ Credits</span>
+          <span style="font-size:13px; font-weight:600; color:#74BF00;">4 × 4 = 16 credits</span>
+        </div>
+        <button onclick="generateFromPrompt()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#74BF00; color:#000; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer;">✨ Generate</button>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -355,8 +546,52 @@
 
   function showStep(id) {
     document.querySelectorAll('.page, #step5').forEach(p => p.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
+    document.getElementById(id).style.display = id === 'step5' ? 'block' : 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'step5') updatePanel();
+  }
+
+  function updatePanel() {
+    document.getElementById('s5cat').textContent = chosen.cat || 'Asset';
+    document.getElementById('s5fmt').textContent = chosen.fmt || 'Image';
+    const tags = document.getElementById('settingsTags');
+    tags.innerHTML = '';
+    [chosen.cat || 'Asset', chosen.fmt || 'Image', 'Brand-focused', '1:1', '4 variations'].forEach(t => {
+      const s = document.createElement('span');
+      s.style.cssText = 'padding:3px 8px; border-radius:6px; background:#1a1a1a; border:1px solid #222; font-size:11px; color:#888;';
+      s.textContent = t;
+      tags.appendChild(s);
+    });
+  }
+
+  function fillPrompt(text) {
+    const inp = document.getElementById('promptInput');
+    inp.value = text;
+    inp.style.height = 'auto';
+    inp.style.height = inp.scrollHeight + 'px';
+  }
+
+  function generateFromPrompt() {
+    const prompt = document.getElementById('promptInput').value;
+    if (!prompt.trim()) { document.getElementById('promptInput').focus(); return; }
+    alert('🚀 Generating with prompt:\n\n"' + prompt + '"');
+  }
+
+  function pickStrat(btn) {
+    btn.closest('div').querySelectorAll('.strat-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function pickRatio(btn) {
+    btn.closest('div').querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function pickVar(btn) {
+    btn.closest('div').querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function pickTpl(el) {
+    document.querySelectorAll('.tpl-mini').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
   }
 
   function pickCategory(cat) {

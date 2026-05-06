@@ -8,582 +8,365 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Inter', system-ui, sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
-
-  .page { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
-
+  .page { max-width: 860px; margin: 0 auto; padding: 48px 32px; }
   h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
-  .subtitle { font-size: 14px; color: #888; margin-bottom: 36px; }
-
-  /* Category cards row */
-  .categories { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 36px; }
-
-  .cat-card {
-    border-radius: 14px; padding: 24px; cursor: pointer;
-    border: 2px solid transparent; transition: all 150ms ease;
-    position: relative;
-  }
-  .cat-card:hover { transform: translateY(-2px); }
-  .cat-card.active { border-color: #1a1a1a; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-
-  .cat-card.asset { background: linear-gradient(135deg, #fef9ef, #fdf3e0); }
-  .cat-card.ad { background: linear-gradient(135deg, #eef8e8, #e2f2d8); }
-  .cat-card.social { background: linear-gradient(135deg, #eef4fd, #e0ecf8); }
-
-  .cat-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 10px; }
-  .cat-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-  .cat-desc { font-size: 12px; color: #777; margin-bottom: 18px; line-height: 1.4; }
-
-  .cat-options { display: flex; flex-direction: column; gap: 8px; }
-
-  .opt-pill {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 12px; border-radius: 8px;
-    background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06);
-    font-size: 13px; font-weight: 500; cursor: pointer;
-    transition: all 120ms ease;
-  }
-  .opt-pill:hover { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.12); }
-  .opt-pill.selected { background: #fff; border-color: #1a1a1a; font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .opt-pill .dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #ccc; flex-shrink: 0; }
-  .opt-pill.selected .dot { background: #1a1a1a; border-color: #1a1a1a; }
-  .opt-sub { font-size: 11px; color: #999; font-weight: 400; margin-left: auto; }
-
-  .not-set-tag {
-    display: inline-block; padding: 3px 10px; border-radius: 6px;
-    background: rgba(0,0,0,0.04); font-size: 11px; color: #aaa; font-weight: 500;
-  }
-
-  /* Quick modes */
-  .quick-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 12px; }
-
-  .quick-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-
-  .quick-card {
-    padding: 16px; border-radius: 10px; cursor: pointer;
-    background: #fff; border: 1px solid #e8e8e8;
-    transition: all 120ms ease;
-  }
-  .quick-card:hover { border-color: #ccc; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .quick-icon { font-size: 18px; margin-bottom: 8px; }
-  .quick-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-  .quick-desc { font-size: 11px; color: #999; line-height: 1.3; }
-
-  /* Format toggle */
-  .format-section { margin-bottom: 28px; }
-  .format-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
-  .format-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .fmt-btn {
-    display: flex; align-items: center; gap: 14px; padding: 16px 20px;
-    border-radius: 12px; border: 2px solid #e8e8e8; background: #fff;
-    cursor: pointer; text-align: left; transition: all 120ms ease;
-    font-family: inherit;
-  }
-  .fmt-btn:hover { border-color: #ccc; }
-  .fmt-btn.active { border-color: #1a1a1a; background: #fafafa; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-  .fmt-icon { font-size: 24px; flex-shrink: 0; }
-  .fmt-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-  .fmt-desc { font-size: 11px; color: #999; line-height: 1.3; }
-
-  /* Separator */
-  .sep { height: 1px; background: #e8e8e8; margin: 0 0 20px; }
+  .subtitle { font-size: 14px; color: #888; margin-bottom: 36px; line-height: 1.5; }
 
   /* Steps bar */
-  .steps-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
-  .step-dot {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: #bbb; font-weight: 500;
-  }
-  .step-dot span {
-    width: 22px; height: 22px; border-radius: 50%;
-    border: 1.5px solid #ddd; display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600;
-  }
+  .steps-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 36px; flex-wrap: wrap; }
+  .step-dot { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #bbb; font-weight: 500; }
+  .step-dot span { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
   .step-dot.active { color: #1a1a1a; }
   .step-dot.active span { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
   .step-dot.done span { background: #4ade80; color: #fff; border-color: #4ade80; }
   .step-dot.done { color: #888; }
-  .step-line { flex: 0 0 24px; height: 1.5px; background: #ddd; }
+  .step-line { flex: 0 0 20px; height: 1.5px; background: #ddd; }
   .step-line.done { background: #4ade80; }
 
-  /* Continue bar */
-  .continue-bar { margin-top: 32px; display: flex; justify-content: flex-end; }
-  .continue-btn {
-    padding: 12px 28px; border-radius: 10px; border: none;
-    background: #1a1a1a; color: #fff; font-family: inherit;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: background 120ms;
-  }
-  .continue-btn:hover { background: #333; }
-
   /* Back button */
-  .back-btn {
-    background: none; border: none; font-family: inherit;
-    font-size: 13px; color: #888; cursor: pointer; margin-bottom: 16px;
-    padding: 4px 0;
-  }
+  .back-btn { background: none; border: none; font-family: inherit; font-size: 13px; color: #888; cursor: pointer; margin-bottom: 20px; padding: 4px 0; }
   .back-btn:hover { color: #1a1a1a; }
 
-  /* Product / Category toggle */
-  .pc-toggle {
-    display: inline-flex; gap: 4px; padding: 4px;
-    background: #f0f0f0; border-radius: 10px; margin-bottom: 20px;
-  }
-  .pc-btn {
-    padding: 8px 20px; border-radius: 8px; border: none;
-    background: transparent; font-family: inherit;
-    font-size: 13px; font-weight: 600; cursor: pointer; color: #888;
-  }
-  .pc-btn.active { background: #1a1a1a; color: #fff; }
-
-  /* Search */
-  .pc-search {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px;
-    margin-bottom: 16px; background: #fff;
-  }
-  .pc-search input {
-    flex: 1; border: none; outline: none; font-family: inherit;
-    font-size: 14px; background: transparent;
-  }
-
-  /* Product / Category grid */
-  .pc-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px; margin-bottom: 16px;
-  }
-  .pc-card {
-    padding: 16px; border-radius: 12px; border: 2px solid #eee;
+  /* Big choice cards (Step 1 categories, Step 2 format) */
+  .big-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .big-cards.two-col { grid-template-columns: 1fr 1fr; }
+  .big-card {
+    padding: 32px 28px; border-radius: 16px; border: 2px solid #e8e8e8;
     background: #fff; cursor: pointer; text-align: center;
-    transition: all 120ms;
+    transition: all 150ms; position: relative;
   }
+  .big-card:hover { border-color: #ccc; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+  .big-card.asset { background: linear-gradient(135deg, #fef9ef, #fdf3e0); }
+  .big-card.ad { background: linear-gradient(135deg, #eef8e8, #e2f2d8); }
+  .big-card.social { background: linear-gradient(135deg, #eef4fd, #e0ecf8); }
+  .big-card .big-icon { font-size: 40px; margin-bottom: 14px; }
+  .big-card .big-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .big-card .big-desc { font-size: 13px; color: #777; line-height: 1.4; }
+
+  /* Product / Category (Step 3) */
+  .pc-toggle { display: inline-flex; gap: 4px; padding: 4px; background: #f0f0f0; border-radius: 10px; margin-bottom: 20px; }
+  .pc-btn { padding: 8px 20px; border-radius: 8px; border: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: #888; }
+  .pc-btn.active { background: #1a1a1a; color: #fff; }
+  .pc-search { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px; margin-bottom: 16px; background: #fff; }
+  .pc-search input { flex: 1; border: none; outline: none; font-family: inherit; font-size: 14px; background: transparent; }
+  .pc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .pc-card { padding: 16px; border-radius: 12px; border: 2px solid #eee; background: #fff; cursor: pointer; text-align: center; transition: all 120ms; }
   .pc-card:hover { border-color: #ccc; transform: translateY(-1px); }
   .pc-card.selected { border-color: #1a1a1a; background: #fafafa; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
   .pc-thumb { font-size: 36px; margin-bottom: 8px; }
   .pc-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
   .pc-meta { font-size: 11px; color: #999; }
-
-  .add-new-btn {
-    background: none; border: 1.5px dashed #ddd; border-radius: 10px;
-    padding: 10px 20px; font-family: inherit; font-size: 13px;
-    font-weight: 600; color: #999; cursor: pointer; width: 100%;
-    transition: all 120ms;
-  }
+  .add-new-btn { background: none; border: 1.5px dashed #ddd; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 13px; font-weight: 600; color: #999; cursor: pointer; width: 100%; transition: all 120ms; }
   .add-new-btn:hover { border-color: #bbb; color: #666; }
 
-  /* Approach cards */
+  /* Continue bar */
+  .continue-bar { margin-top: 32px; display: flex; justify-content: flex-end; }
+  .continue-btn { padding: 12px 28px; border-radius: 10px; border: none; background: #1a1a1a; color: #fff; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 120ms; }
+  .continue-btn:hover { background: #333; }
+
+  /* Approach cards (Step 4) */
   .approach-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-  .approach-card {
-    padding: 28px; border-radius: 14px; border: 2px solid #e8e8e8;
-    background: #fff; cursor: pointer; transition: all 150ms; position: relative;
-  }
+  .approach-card { padding: 28px; border-radius: 14px; border: 2px solid #e8e8e8; background: #fff; cursor: pointer; transition: all 150ms; }
   .approach-card:hover { border-color: #ccc; transform: translateY(-2px); }
   .approach-card.active { border-color: #1a1a1a; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
   .approach-icon { font-size: 32px; margin-bottom: 12px; }
-  .approach-badge {
-    display: inline-block; padding: 3px 10px; border-radius: 6px;
-    background: #f0fdf4; color: #16a34a; font-size: 10px; font-weight: 600;
-    margin-bottom: 10px; letter-spacing: 0.5px;
-  }
+  .approach-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; margin-bottom: 10px; letter-spacing: 0.5px; }
   .approach-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
   .approach-desc { font-size: 13px; color: #777; line-height: 1.5; margin-bottom: 14px; }
   .approach-features { list-style: none; padding: 0; }
-  .approach-features li {
-    font-size: 12px; color: #888; padding: 4px 0; padding-left: 18px; position: relative;
-  }
+  .approach-features li { font-size: 12px; color: #888; padding: 4px 0 4px 18px; position: relative; }
   .approach-features li::before { content: '✓'; position: absolute; left: 0; color: #aaa; font-size: 11px; }
 
-  /* Reference upload area */
+  /* Reference upload */
   .ref-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
   .ref-options { display: flex; gap: 8px; margin-bottom: 16px; }
-  .ref-option {
-    padding: 8px 16px; border-radius: 8px; border: 1.5px solid #e0e0e0;
-    font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; transition: all 100ms;
-  }
+  .ref-option { padding: 8px 16px; border-radius: 8px; border: 1.5px solid #e0e0e0; font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; transition: all 100ms; }
   .ref-option:hover { border-color: #ccc; }
   .ref-option.active { border-color: #1a1a1a; background: #fafafa; }
-  .ref-dropzone {
-    border: 2px dashed #ddd; border-radius: 12px; padding: 32px; text-align: center;
-    cursor: pointer; transition: border-color 120ms; margin-bottom: 20px;
-  }
+  .ref-dropzone { border: 2px dashed #ddd; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: border-color 120ms; margin-bottom: 20px; }
   .ref-dropzone:hover { border-color: #bbb; }
   .ref-dropzone-icon { font-size: 28px; margin-bottom: 8px; }
   .ref-dropzone-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
   .ref-dropzone-hint { font-size: 11px; color: #aaa; }
-  .ref-sliders { margin-bottom: 16px; }
   .ref-slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
   .ref-slider-label { font-size: 12px; font-weight: 600; min-width: 130px; }
   .ref-range { flex: 1; }
   .ref-slider-val { font-size: 12px; color: #888; min-width: 60px; }
-  .ref-checkboxes { display: flex; gap: 16px; }
+  .ref-checkboxes { display: flex; gap: 16px; margin-bottom: 20px; }
   .ref-check { font-size: 12px; color: #666; display: flex; align-items: center; gap: 4px; cursor: pointer; }
 
-  .step-page { }
+  /* Quick mode cards (on Step 4) */
+  .sep { height: 1px; background: #e8e8e8; margin: 8px 0 20px; }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 12px; }
+  .quick-modes { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .quick-card { padding: 16px; border-radius: 10px; cursor: pointer; background: #fff; border: 1.5px solid #e8e8e8; transition: all 120ms; }
+  .quick-card:hover { border-color: #ccc; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .quick-card.selected { border-color: #1a1a1a; background: #fafafa; }
+  .quick-icon { font-size: 20px; margin-bottom: 8px; }
+  .quick-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .quick-desc { font-size: 11px; color: #999; line-height: 1.3; }
+
+  /* Generate button */
+  .gen-btn { padding: 14px 36px; border-radius: 12px; border: none; background: #1a1a1a; color: #fff; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 120ms; display: inline-flex; align-items: center; gap: 8px; }
+  .gen-btn:hover { background: #333; }
 
   @media (max-width: 768px) {
-    .categories { grid-template-columns: 1fr; }
+    .big-cards, .approach-cards { grid-template-columns: 1fr; }
     .quick-modes { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 <body>
-<div class="page">
 
-<!-- STEP INDICATOR -->
-<div class="steps-bar">
-  <div class="step-dot active" data-step="1"><span>1</span> Category & Format</div>
-  <div class="step-line"></div>
-  <div class="step-dot" data-step="2"><span>2</span> Product or Category</div>
-  <div class="step-line"></div>
-  <div class="step-dot" data-step="3"><span>3</span> Generate</div>
+<!-- ======== STEP 1: Category ======== -->
+<div class="page" id="step1">
+  <div class="steps-bar">
+    <div class="step-dot active"><span>1</span> Category</div>
+    <div class="step-line"></div>
+    <div class="step-dot"><span>2</span> Format</div>
+    <div class="step-line"></div>
+    <div class="step-dot"><span>3</span> Product</div>
+    <div class="step-line"></div>
+    <div class="step-dot"><span>4</span> Create</div>
+  </div>
+
+  <h1>What are you generating today?</h1>
+  <p class="subtitle">Pick a category to get started.</p>
+
+  <div class="big-cards">
+    <div class="big-card asset" onclick="pickCategory('Asset')">
+      <div class="big-icon">🎨</div>
+      <div class="big-title">Asset</div>
+      <div class="big-desc">Brand-anchored visuals — reusable building blocks for any channel.</div>
+    </div>
+    <div class="big-card ad" onclick="pickCategory('Ad')">
+      <div class="big-icon">📢</div>
+      <div class="big-title">Ad</div>
+      <div class="big-desc">Click & conversion-driven formats across all funnels.</div>
+    </div>
+    <div class="big-card social" onclick="pickCategory('Social')">
+      <div class="big-icon">📱</div>
+      <div class="big-title">Social</div>
+      <div class="big-desc">Social-optimized visuals — photos, stories, carousel posts.</div>
+    </div>
+  </div>
 </div>
 
-<div id="step1">
-  <h1>What are you generating today?</h1>
-  <p class="subtitle">Pick a category to kick-start mode. Smart defaults set up the form for you — override before you generate.</p>
+<!-- ======== STEP 2: Format (Image / Video) ======== -->
+<div class="page" id="step2" style="display:none;">
+  <div class="steps-bar">
+    <div class="step-dot done"><span>✓</span> Category</div>
+    <div class="step-line done"></div>
+    <div class="step-dot active"><span>2</span> Format</div>
+    <div class="step-line"></div>
+    <div class="step-dot"><span>3</span> Product</div>
+    <div class="step-line"></div>
+    <div class="step-dot"><span>4</span> Create</div>
+  </div>
 
-  <!-- Three category cards -->
-  <div class="categories">
+  <button class="back-btn" onclick="showStep('step1')">← Back</button>
+  <h1>Choose output format</h1>
+  <p class="subtitle">Category: <strong id="chosenCat">—</strong></p>
 
-    <!-- ASSET -->
-    <div class="cat-card asset active" onclick="selectCat(this)">
-      <div class="cat-label">Category</div>
-      <div class="cat-title">Asset</div>
-      <div class="cat-desc">Brand anchored visuals — reusable building blocks.</div>
-      <div class="cat-options">
-        <div class="opt-pill selected" onclick="event.stopPropagation(); selectOpt(this)">
-          <span class="dot"></span> Brand-focused
-          <span class="opt-sub">Brand anchored creative</span>
-        </div>
-        <div class="opt-pill" onclick="event.stopPropagation(); selectOpt(this)">
-          <span class="dot"></span> Product-focused
-          <span class="opt-sub">Product-led, brand-anchored asset</span>
-        </div>
-        <div class="opt-pill" onclick="event.stopPropagation(); selectOpt(this)">
-          <span class="dot"></span> Product Shoot
-          <span class="opt-sub">Studio-quality product scenes</span>
-        </div>
-      </div>
+  <div class="big-cards two-col">
+    <div class="big-card" onclick="pickFormat('Image')" style="background:linear-gradient(135deg,#fafafa,#f0f0f0);">
+      <div class="big-icon">🖼️</div>
+      <div class="big-title">Image</div>
+      <div class="big-desc">Static visuals — ads, posts, banners, product shots.</div>
     </div>
-
-    <!-- AD -->
-    <div class="cat-card ad" onclick="selectCat(this)">
-      <div class="cat-label">Category</div>
-      <div class="cat-title">Ad</div>
-      <div class="cat-desc">Click & conversion-driven formats, across all funnels.</div>
-      <div class="cat-options">
-        <div class="opt-pill selected" onclick="event.stopPropagation(); selectOpt(this)">
-          <span class="dot"></span> Product Ad
-          <span class="opt-sub">Product ads, carousel, d...</span>
-        </div>
-        <div class="opt-pill" onclick="event.stopPropagation(); selectOpt(this)">
-          <span class="dot"></span> Performance Ad
-          <span class="opt-sub">Performance ads anchored to a category + d...</span>
-        </div>
-        <div class="opt-pill" onclick="event.stopPropagation(); selectOpt(this)">
-          <span class="dot"></span> Brand Ad
-          <span class="opt-sub">Brand ads anchored to a brand or profile</span>
-        </div>
-      </div>
+    <div class="big-card" onclick="pickFormat('Video')" style="background:linear-gradient(135deg,#f5f0fa,#ede4f7);">
+      <div class="big-icon">🎬</div>
+      <div class="big-title">Video</div>
+      <div class="big-desc">Motion content — reels, stories, UGC, product demos.</div>
     </div>
+  </div>
+</div>
 
-    <!-- SOCIAL -->
-    <div class="cat-card social" onclick="selectCat(this)">
-      <div class="cat-label">Creative · Mode</div>
-      <div class="cat-title">Social</div>
-      <div class="cat-desc">Social-optimized visuals — photos, stories, carousel posts.</div>
-      <div class="cat-options">
-        <div class="not-set-tag">NOT SET</div>
-        <div style="font-size: 11px; color: #aaa; margin-top: 6px; line-height: 1.4;">Choose modes after selecting this category.</div>
-      </div>
+<!-- ======== STEP 3: Product or Category ======== -->
+<div class="page" id="step3" style="display:none;">
+  <div class="steps-bar">
+    <div class="step-dot done"><span>✓</span> Category</div>
+    <div class="step-line done"></div>
+    <div class="step-dot done"><span>✓</span> Format</div>
+    <div class="step-line done"></div>
+    <div class="step-dot active"><span>3</span> Product</div>
+    <div class="step-line"></div>
+    <div class="step-dot"><span>4</span> Create</div>
+  </div>
+
+  <button class="back-btn" onclick="showStep('step2')">← Back</button>
+  <h1>What are you creating for?</h1>
+  <p class="subtitle"><strong id="chosenCat2">—</strong> · <strong id="chosenFmt2">—</strong></p>
+
+  <div class="pc-toggle">
+    <button class="pc-btn active" onclick="togglePC(this,'product')">📦 Product</button>
+    <button class="pc-btn" onclick="togglePC(this,'category')">📁 Category</button>
+  </div>
+
+  <div id="productView">
+    <div class="pc-search"><span style="color:#aaa;">🔍</span><input type="text" placeholder="Search products or paste URL..." id="pSearch" oninput="filterGrid('product')" /></div>
+    <div class="pc-grid" id="productGrid">
+      <div class="pc-card selected" onclick="selectPC(this)"><div class="pc-thumb">👕</div><div class="pc-name">Classic Tee</div><div class="pc-meta">Apparel · $32</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">👟</div><div class="pc-name">Everyday Sneaker</div><div class="pc-meta">Footwear · $95</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">🧥</div><div class="pc-name">Linen Jacket</div><div class="pc-meta">Apparel · $118</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">👖</div><div class="pc-name">Slim Trousers</div><div class="pc-meta">Apparel · $74</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">🧢</div><div class="pc-name">Canvas Cap</div><div class="pc-meta">Accessories · $28</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">👜</div><div class="pc-name">Tote Bag</div><div class="pc-meta">Accessories · $56</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">💄</div><div class="pc-name">Lipstick Promo</div><div class="pc-meta">Beauty · $24</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">🌸</div><div class="pc-name">Spring Collection</div><div class="pc-meta">Apparel · Bundle</div></div>
+    </div>
+    <button class="add-new-btn">+ Add new product</button>
+  </div>
+
+  <div id="categoryView" style="display:none;">
+    <div class="pc-search"><span style="color:#aaa;">🔍</span><input type="text" placeholder="Search categories..." id="cSearch" oninput="filterGrid('category')" /></div>
+    <div class="pc-grid" id="categoryGrid">
+      <div class="pc-card selected" onclick="selectPC(this)"><div class="pc-thumb">🛡</div><div class="pc-name">Life Insurance</div><div class="pc-meta">Insurance</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">🏠</div><div class="pc-name">Home Insurance</div><div class="pc-meta">Insurance</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">💳</div><div class="pc-name">Credit Cards</div><div class="pc-meta">Finance</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">🏡</div><div class="pc-name">Mortgage</div><div class="pc-meta">Finance</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">🐾</div><div class="pc-name">Pet Insurance</div><div class="pc-meta">Insurance</div></div>
+      <div class="pc-card" onclick="selectPC(this)"><div class="pc-thumb">₿</div><div class="pc-name">Crypto Trading</div><div class="pc-meta">Finance</div></div>
+    </div>
+    <button class="add-new-btn">+ Add new category</button>
+  </div>
+
+  <div class="continue-bar">
+    <button class="continue-btn" onclick="goToStep4()">Continue →</button>
+  </div>
+</div>
+
+<!-- ======== STEP 4: From Scratch / Reference + Quick Modes ======== -->
+<div class="page" id="step4" style="display:none;">
+  <div class="steps-bar">
+    <div class="step-dot done"><span>✓</span> Category</div>
+    <div class="step-line done"></div>
+    <div class="step-dot done"><span>✓</span> Format</div>
+    <div class="step-line done"></div>
+    <div class="step-dot done"><span>✓</span> Product</div>
+    <div class="step-line done"></div>
+    <div class="step-dot active"><span>4</span> Create</div>
+  </div>
+
+  <button class="back-btn" onclick="showStep('step3')">← Back</button>
+  <h1>How do you want to create?</h1>
+  <p class="subtitle">Start fresh or use an existing creative as a starting point.</p>
+
+  <!-- Approach cards -->
+  <div class="approach-cards">
+    <div class="approach-card active" onclick="selectApproach(this,'scratch')">
+      <div class="approach-icon">✨</div>
+      <div class="approach-badge" style="background:#f0fdf4; color:#16a34a;">Recommended</div>
+      <div class="approach-title">From Scratch</div>
+      <p class="approach-desc">Describe what you want — Genie generates new creatives from your prompt and brand context.</p>
+      <ul class="approach-features">
+        <li>Write a prompt or use AI suggestions</li>
+        <li>Pick a strategy (optional)</li>
+        <li>Choose vibes & style direction</li>
+        <li>Set number of variations</li>
+      </ul>
+    </div>
+    <div class="approach-card" onclick="selectApproach(this,'reference')">
+      <div class="approach-icon">🔄</div>
+      <div class="approach-badge" style="background:#eef4fd; color:#3b82f6;">Iterate</div>
+      <div class="approach-title">Reference / Variation</div>
+      <p class="approach-desc">Upload or pick an existing creative — Genie creates variations keeping the feel but exploring new angles.</p>
+      <ul class="approach-features">
+        <li>Upload an image or pick from library</li>
+        <li>Choose what to keep (layout, colors, copy)</li>
+        <li>Adjust variation intensity</li>
+        <li>Generate multiple alternatives</li>
+      </ul>
     </div>
   </div>
 
-  <!-- Format toggle: Image / Video -->
-  <div class="format-section">
-    <div class="format-label">Output format</div>
-    <div class="format-toggle">
-      <button class="fmt-btn active" onclick="selectFormat(this, 'image')">
-        <span class="fmt-icon">🖼️</span>
-        <div>
-          <div class="fmt-title">Image</div>
-          <div class="fmt-desc">Static visuals — ads, posts, banners, product shots</div>
-        </div>
-      </button>
-      <button class="fmt-btn" onclick="selectFormat(this, 'video')">
-        <span class="fmt-icon">🎬</span>
-        <div>
-          <div class="fmt-title">Video</div>
-          <div class="fmt-desc">Motion content — reels, stories, UGC, product demos</div>
-        </div>
-      </button>
+  <!-- Reference upload (hidden by default) -->
+  <div id="referenceUpload" style="display:none;">
+    <div class="ref-label">Reference creative</div>
+    <div class="ref-options">
+      <div class="ref-option active" onclick="selectRef(this)">📤 Upload file</div>
+      <div class="ref-option" onclick="selectRef(this)">🖼️ From Library</div>
+      <div class="ref-option" onclick="selectRef(this)">🔗 Paste URL</div>
+    </div>
+    <div class="ref-dropzone">
+      <div class="ref-dropzone-icon">📁</div>
+      <div class="ref-dropzone-title">Drop your reference here or click to browse</div>
+      <div class="ref-dropzone-hint">PNG, JPG, MP4 · up to 25 MB</div>
+    </div>
+    <div class="ref-slider-row"><span class="ref-slider-label">Variation intensity</span><input type="range" min="1" max="5" value="3" class="ref-range" /><span class="ref-slider-val">Medium</span></div>
+    <div class="ref-checkboxes">
+      <label class="ref-check"><input type="checkbox" checked /> Keep layout</label>
+      <label class="ref-check"><input type="checkbox" checked /> Keep colors</label>
+      <label class="ref-check"><input type="checkbox" /> Keep copy</label>
     </div>
   </div>
 
   <!-- Quick Modes -->
   <div class="sep"></div>
-  <div class="quick-label">Quick Modes</div>
+  <div class="section-label">Quick Modes</div>
   <div class="quick-modes">
-    <div class="quick-card" onclick="this.style.borderColor='#1a1a1a'">
+    <div class="quick-card" onclick="toggleQuick(this)">
       <div class="quick-icon">🎬</div>
       <div class="quick-title">UGC Video</div>
-      <div class="quick-desc">Script + edit a 15–60s UGC-style reel or Ig...</div>
+      <div class="quick-desc">Script + edit a 15–60s UGC-style reel</div>
     </div>
-    <div class="quick-card" onclick="this.style.borderColor='#1a1a1a'">
+    <div class="quick-card" onclick="toggleQuick(this)">
+      <div class="quick-icon">🖼️</div>
+      <div class="quick-title">Image-to-Video</div>
+      <div class="quick-desc">Turn a static image into motion content</div>
+    </div>
+    <div class="quick-card" onclick="toggleQuick(this)">
+      <div class="quick-icon">🎥</div>
+      <div class="quick-title">B-Roll</div>
+      <div class="quick-desc">Generate ambient footage for editing</div>
+    </div>
+    <div class="quick-card" onclick="toggleQuick(this)">
       <div class="quick-icon">🔄</div>
       <div class="quick-title">Variations</div>
-      <div class="quick-desc">Generate multiple variations of an existing a...</div>
+      <div class="quick-desc">Multiple versions of an existing creative</div>
     </div>
-    <div class="quick-card" onclick="this.style.borderColor='#1a1a1a'">
-      <div class="quick-icon">🖼️</div>
-      <div class="quick-title">Image-to-Ad</div>
-      <div class="quick-desc">Upload an image, turn it into a polished ad c...</div>
-    </div>
-    <div class="quick-card" onclick="this.style.borderColor='#1a1a1a'">
+    <div class="quick-card" onclick="toggleQuick(this)">
       <div class="quick-icon">✂️</div>
       <div class="quick-title">Background Remover</div>
-      <div class="quick-desc">Cut a 1-take PNG with transparent bg...</div>
+      <div class="quick-desc">Cut out with transparent background</div>
+    </div>
+    <div class="quick-card" onclick="toggleQuick(this)">
+      <div class="quick-icon">📐</div>
+      <div class="quick-title">Resize / Reformat</div>
+      <div class="quick-desc">Adapt creative to new dimensions</div>
     </div>
   </div>
 
-</div>
-
-<!-- STEP 1 CONTINUE BUTTON -->
-<div class="continue-bar" id="continueBar">
-  <button class="continue-btn" onclick="goToStep2()">Continue → Product or Category</button>
-</div>
-
-</div><!-- close step1 wrapper -->
-
-<!-- ================================ -->
-<!-- STEP 2: Product or Category      -->
-<!-- ================================ -->
-<div class="page step-page" id="step2" style="display:none;">
-
-<div class="steps-bar">
-  <div class="step-dot done" data-step="1"><span>✓</span> Category & Format</div>
-  <div class="step-line done"></div>
-  <div class="step-dot active" data-step="2"><span>2</span> Product or Category</div>
-  <div class="step-line"></div>
-  <div class="step-dot" data-step="3"><span>3</span> Generate</div>
-</div>
-
-<button class="back-btn" onclick="goToStep1()">← Back</button>
-
-<h1>What are you creating for?</h1>
-<p class="subtitle">Choose a product or category — Genie uses this to match style, audience, and context.</p>
-
-<!-- Toggle: Product vs Category -->
-<div class="pc-toggle">
-  <button class="pc-btn active" onclick="togglePC(this, 'product')">📦 Product</button>
-  <button class="pc-btn" onclick="togglePC(this, 'category')">📁 Category</button>
-</div>
-
-<!-- Product view -->
-<div id="productView">
-  <div class="pc-search">
-    <span style="color:#aaa;">🔍</span>
-    <input type="text" placeholder="Search products or paste URL..." id="productSearch" oninput="filterItems('product')" />
-  </div>
-
-  <div class="pc-grid" id="productGrid">
-    <div class="pc-card selected" onclick="selectPC(this)">
-      <div class="pc-thumb">👕</div>
-      <div class="pc-name">Classic Tee</div>
-      <div class="pc-meta">Apparel · $32</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">👟</div>
-      <div class="pc-name">Everyday Sneaker</div>
-      <div class="pc-meta">Footwear · $95</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">🧥</div>
-      <div class="pc-name">Linen Jacket</div>
-      <div class="pc-meta">Apparel · $118</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">👖</div>
-      <div class="pc-name">Slim Trousers</div>
-      <div class="pc-meta">Apparel · $74</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">🧢</div>
-      <div class="pc-name">Canvas Cap</div>
-      <div class="pc-meta">Accessories · $28</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">👜</div>
-      <div class="pc-name">Tote Bag</div>
-      <div class="pc-meta">Accessories · $56</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">💄</div>
-      <div class="pc-name">Lipstick Promo</div>
-      <div class="pc-meta">Beauty · $24</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">🌸</div>
-      <div class="pc-name">Spring Collection</div>
-      <div class="pc-meta">Apparel · Bundle</div>
-    </div>
-  </div>
-
-  <button class="add-new-btn" onclick="alert('Add product — coming soon')">+ Add new product</button>
-</div>
-
-<!-- Category view -->
-<div id="categoryView" style="display:none;">
-  <div class="pc-search">
-    <span style="color:#aaa;">🔍</span>
-    <input type="text" placeholder="Search categories..." id="categorySearch" oninput="filterItems('category')" />
-  </div>
-
-  <div class="pc-grid" id="categoryGrid">
-    <div class="pc-card selected" onclick="selectPC(this)">
-      <div class="pc-thumb">🛡</div>
-      <div class="pc-name">Life Insurance</div>
-      <div class="pc-meta">Insurance</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">🏠</div>
-      <div class="pc-name">Home Insurance</div>
-      <div class="pc-meta">Insurance</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">💳</div>
-      <div class="pc-name">Credit Cards</div>
-      <div class="pc-meta">Finance</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">🏡</div>
-      <div class="pc-name">Mortgage</div>
-      <div class="pc-meta">Finance</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">🐾</div>
-      <div class="pc-name">Pet Insurance</div>
-      <div class="pc-meta">Insurance</div>
-    </div>
-    <div class="pc-card" onclick="selectPC(this)">
-      <div class="pc-thumb">₿</div>
-      <div class="pc-name">Crypto Trading</div>
-      <div class="pc-meta">Finance</div>
-    </div>
-  </div>
-
-  <button class="add-new-btn" onclick="alert('Add category — coming soon')">+ Add new category</button>
-</div>
-
-<!-- Continue to generate -->
-<div class="continue-bar">
-  <button class="continue-btn" onclick="goToStep3()">Continue → Choose Approach</button>
-</div>
-
-</div><!-- close step2 -->
-
-<!-- ================================ -->
-<!-- STEP 3: From Scratch or Reference -->
-<!-- ================================ -->
-<div class="page step-page" id="step3" style="display:none;">
-
-<div class="steps-bar">
-  <div class="step-dot done" data-step="1"><span>✓</span> Category & Format</div>
-  <div class="step-line done"></div>
-  <div class="step-dot done" data-step="2"><span>✓</span> Product or Category</div>
-  <div class="step-line done"></div>
-  <div class="step-dot active" data-step="3"><span>3</span> Generate</div>
-</div>
-
-<button class="back-btn" onclick="goBackToStep2()">← Back</button>
-
-<h1>How do you want to create?</h1>
-<p class="subtitle">Start fresh with a prompt, or use an existing creative as a reference to build variations.</p>
-
-<div class="approach-cards">
-
-  <!-- From Scratch -->
-  <div class="approach-card active" onclick="selectApproach(this, 'scratch')">
-    <div class="approach-icon">✨</div>
-    <div class="approach-badge">Recommended</div>
-    <h3 class="approach-title">From Scratch</h3>
-    <p class="approach-desc">Describe what you want — Genie generates completely new creatives from your prompt, brand context, and selected mode.</p>
-    <ul class="approach-features">
-      <li>Write a prompt or use AI suggestions</li>
-      <li>Pick a strategy (optional)</li>
-      <li>Choose vibes & style direction</li>
-      <li>Set number of variations</li>
-    </ul>
-  </div>
-
-  <!-- Reference / Variation -->
-  <div class="approach-card" onclick="selectApproach(this, 'reference')">
-    <div class="approach-icon">🔄</div>
-    <div class="approach-badge" style="background:#eef4fd; color:#3b82f6;">Iterate</div>
-    <h3 class="approach-title">Reference / Variation</h3>
-    <p class="approach-desc">Upload or pick an existing creative — Genie creates variations that keep the feel but explore new angles.</p>
-    <ul class="approach-features">
-      <li>Upload an image or pick from library</li>
-      <li>Choose what to keep (layout, colors, copy)</li>
-      <li>Adjust intensity of variation</li>
-      <li>Generate multiple alternatives</li>
-    </ul>
-  </div>
-
-</div>
-
-<!-- Reference upload area (shown when Reference is selected) -->
-<div id="referenceUpload" style="display:none;">
-  <div class="ref-label">Reference creative</div>
-  <div class="ref-options">
-    <div class="ref-option active" onclick="selectRefSource(this, 'upload')">📤 Upload file</div>
-    <div class="ref-option" onclick="selectRefSource(this, 'library')">🖼️ Pick from Library</div>
-    <div class="ref-option" onclick="selectRefSource(this, 'url')">🔗 Paste URL</div>
-  </div>
-  <div class="ref-dropzone" onclick="document.getElementById('refFileInput').click()">
-    <div class="ref-dropzone-icon">📁</div>
-    <div class="ref-dropzone-title">Drop your reference here or click to browse</div>
-    <div class="ref-dropzone-hint">PNG, JPG, MP4 · up to 25 MB</div>
-    <input type="file" id="refFileInput" accept="image/*,video/*" style="display:none;" />
-  </div>
-  <div class="ref-sliders">
-    <div class="ref-slider-row">
-      <span class="ref-slider-label">Variation intensity</span>
-      <input type="range" min="1" max="5" value="3" class="ref-range" />
-      <span class="ref-slider-val">Medium</span>
-    </div>
-    <div class="ref-checkboxes">
-      <label class="ref-check"><input type="checkbox" checked /> Keep layout</label>
-      <label class="ref-check"><input type="checkbox" checked /> Keep colors</label>
-      <label class="ref-check"><input type="checkbox" /> Keep copy/text</label>
-    </div>
+  <!-- Generate -->
+  <div class="continue-bar">
+    <button class="gen-btn" onclick="alert('🚀 Generating creatives...')">✨ Generate Creatives</button>
   </div>
 </div>
-
-<!-- Continue -->
-<div class="continue-bar">
-  <button class="continue-btn" onclick="alert('🚀 Generating creatives...')">✨ Generate Creatives</button>
-</div>
-
-</div><!-- close step3 -->
 
 <script>
-  function selectCat(card) {
-    document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-  }
-  // Step navigation
-  function goToStep2() {
-    document.getElementById('step1').style.display = 'none';
-    document.getElementById('step2').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function goToStep1() {
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step1').style.display = 'block';
+  let chosen = { cat: '', fmt: '', product: '' };
+
+  function showStep(id) {
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Product / Category toggle
+  function pickCategory(cat) {
+    chosen.cat = cat;
+    document.getElementById('chosenCat').textContent = cat;
+    document.getElementById('chosenCat2').textContent = cat;
+    showStep('step2');
+  }
+
+  function pickFormat(fmt) {
+    chosen.fmt = fmt;
+    document.getElementById('chosenFmt2').textContent = fmt;
+    showStep('step3');
+  }
+
+  function goToStep4() { showStep('step4'); }
+
   function togglePC(btn, view) {
     document.querySelectorAll('.pc-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -594,45 +377,23 @@
     card.closest('.pc-grid').querySelectorAll('.pc-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
   }
-  function filterItems(type) {
-    const q = document.getElementById(type + 'Search').value.toLowerCase();
-    document.querySelectorAll('#' + type + 'Grid .pc-card').forEach(c => {
-      const name = c.querySelector('.pc-name').textContent.toLowerCase();
-      c.style.display = name.includes(q) ? '' : 'none';
+  function filterGrid(type) {
+    const q = document.getElementById(type === 'product' ? 'pSearch' : 'cSearch').value.toLowerCase();
+    document.querySelectorAll('#' + (type === 'product' ? 'productGrid' : 'categoryGrid') + ' .pc-card').forEach(c => {
+      c.style.display = c.querySelector('.pc-name').textContent.toLowerCase().includes(q) ? '' : 'none';
     });
   }
 
-  // Step 3
-  function goToStep3() {
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step3').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function goBackToStep2() {
-    document.getElementById('step3').style.display = 'none';
-    document.getElementById('step2').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
   function selectApproach(card, type) {
     document.querySelectorAll('.approach-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     document.getElementById('referenceUpload').style.display = type === 'reference' ? 'block' : 'none';
   }
-  function selectRefSource(btn, src) {
+  function selectRef(btn) {
     document.querySelectorAll('.ref-option').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
-
-  function selectFormat(btn, fmt) {
-    document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  function selectOpt(pill) {
-    const card = pill.closest('.cat-card');
-    card.querySelectorAll('.opt-pill').forEach(p => p.classList.remove('selected'));
-    pill.classList.add('selected');
-    selectCat(card);
-  }
+  function toggleQuick(card) { card.classList.toggle('selected'); }
 </script>
 </body>
 </html>

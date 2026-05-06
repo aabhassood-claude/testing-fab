@@ -87,6 +87,91 @@
   /* Separator */
   .sep { height: 1px; background: #e8e8e8; margin: 0 0 20px; }
 
+  /* Steps bar */
+  .steps-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
+  .step-dot {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: #bbb; font-weight: 500;
+  }
+  .step-dot span {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid #ddd; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+  }
+  .step-dot.active { color: #1a1a1a; }
+  .step-dot.active span { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .step-dot.done span { background: #4ade80; color: #fff; border-color: #4ade80; }
+  .step-dot.done { color: #888; }
+  .step-line { flex: 0 0 24px; height: 1.5px; background: #ddd; }
+  .step-line.done { background: #4ade80; }
+
+  /* Continue bar */
+  .continue-bar { margin-top: 32px; display: flex; justify-content: flex-end; }
+  .continue-btn {
+    padding: 12px 28px; border-radius: 10px; border: none;
+    background: #1a1a1a; color: #fff; font-family: inherit;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background 120ms;
+  }
+  .continue-btn:hover { background: #333; }
+
+  /* Back button */
+  .back-btn {
+    background: none; border: none; font-family: inherit;
+    font-size: 13px; color: #888; cursor: pointer; margin-bottom: 16px;
+    padding: 4px 0;
+  }
+  .back-btn:hover { color: #1a1a1a; }
+
+  /* Product / Category toggle */
+  .pc-toggle {
+    display: inline-flex; gap: 4px; padding: 4px;
+    background: #f0f0f0; border-radius: 10px; margin-bottom: 20px;
+  }
+  .pc-btn {
+    padding: 8px 20px; border-radius: 8px; border: none;
+    background: transparent; font-family: inherit;
+    font-size: 13px; font-weight: 600; cursor: pointer; color: #888;
+  }
+  .pc-btn.active { background: #1a1a1a; color: #fff; }
+
+  /* Search */
+  .pc-search {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px;
+    margin-bottom: 16px; background: #fff;
+  }
+  .pc-search input {
+    flex: 1; border: none; outline: none; font-family: inherit;
+    font-size: 14px; background: transparent;
+  }
+
+  /* Product / Category grid */
+  .pc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .pc-card {
+    padding: 16px; border-radius: 12px; border: 2px solid #eee;
+    background: #fff; cursor: pointer; text-align: center;
+    transition: all 120ms;
+  }
+  .pc-card:hover { border-color: #ccc; transform: translateY(-1px); }
+  .pc-card.selected { border-color: #1a1a1a; background: #fafafa; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .pc-thumb { font-size: 36px; margin-bottom: 8px; }
+  .pc-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .pc-meta { font-size: 11px; color: #999; }
+
+  .add-new-btn {
+    background: none; border: 1.5px dashed #ddd; border-radius: 10px;
+    padding: 10px 20px; font-family: inherit; font-size: 13px;
+    font-weight: 600; color: #999; cursor: pointer; width: 100%;
+    transition: all 120ms;
+  }
+  .add-new-btn:hover { border-color: #bbb; color: #666; }
+
+  .step-page { }
+
   @media (max-width: 768px) {
     .categories { grid-template-columns: 1fr; }
     .quick-modes { grid-template-columns: 1fr 1fr; }
@@ -96,6 +181,16 @@
 <body>
 <div class="page">
 
+<!-- STEP INDICATOR -->
+<div class="steps-bar">
+  <div class="step-dot active" data-step="1"><span>1</span> Category & Format</div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="2"><span>2</span> Product or Category</div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="3"><span>3</span> Generate</div>
+</div>
+
+<div id="step1">
   <h1>What are you generating today?</h1>
   <p class="subtitle">Pick a category to kick-start mode. Smart defaults set up the form for you — override before you generate.</p>
 
@@ -205,11 +300,176 @@
 
 </div>
 
+<!-- STEP 1 CONTINUE BUTTON -->
+<div class="continue-bar" id="continueBar">
+  <button class="continue-btn" onclick="goToStep2()">Continue → Product or Category</button>
+</div>
+
+</div><!-- close step1 wrapper -->
+
+<!-- ================================ -->
+<!-- STEP 2: Product or Category      -->
+<!-- ================================ -->
+<div class="page step-page" id="step2" style="display:none;">
+
+<div class="steps-bar">
+  <div class="step-dot done" data-step="1"><span>✓</span> Category & Format</div>
+  <div class="step-line done"></div>
+  <div class="step-dot active" data-step="2"><span>2</span> Product or Category</div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="3"><span>3</span> Generate</div>
+</div>
+
+<button class="back-btn" onclick="goToStep1()">← Back</button>
+
+<h1>What are you creating for?</h1>
+<p class="subtitle">Choose a product or category — Genie uses this to match style, audience, and context.</p>
+
+<!-- Toggle: Product vs Category -->
+<div class="pc-toggle">
+  <button class="pc-btn active" onclick="togglePC(this, 'product')">📦 Product</button>
+  <button class="pc-btn" onclick="togglePC(this, 'category')">📁 Category</button>
+</div>
+
+<!-- Product view -->
+<div id="productView">
+  <div class="pc-search">
+    <span style="color:#aaa;">🔍</span>
+    <input type="text" placeholder="Search products or paste URL..." id="productSearch" oninput="filterItems('product')" />
+  </div>
+
+  <div class="pc-grid" id="productGrid">
+    <div class="pc-card selected" onclick="selectPC(this)">
+      <div class="pc-thumb">👕</div>
+      <div class="pc-name">Classic Tee</div>
+      <div class="pc-meta">Apparel · $32</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">👟</div>
+      <div class="pc-name">Everyday Sneaker</div>
+      <div class="pc-meta">Footwear · $95</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">🧥</div>
+      <div class="pc-name">Linen Jacket</div>
+      <div class="pc-meta">Apparel · $118</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">👖</div>
+      <div class="pc-name">Slim Trousers</div>
+      <div class="pc-meta">Apparel · $74</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">🧢</div>
+      <div class="pc-name">Canvas Cap</div>
+      <div class="pc-meta">Accessories · $28</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">👜</div>
+      <div class="pc-name">Tote Bag</div>
+      <div class="pc-meta">Accessories · $56</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">💄</div>
+      <div class="pc-name">Lipstick Promo</div>
+      <div class="pc-meta">Beauty · $24</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">🌸</div>
+      <div class="pc-name">Spring Collection</div>
+      <div class="pc-meta">Apparel · Bundle</div>
+    </div>
+  </div>
+
+  <button class="add-new-btn" onclick="alert('Add product — coming soon')">+ Add new product</button>
+</div>
+
+<!-- Category view -->
+<div id="categoryView" style="display:none;">
+  <div class="pc-search">
+    <span style="color:#aaa;">🔍</span>
+    <input type="text" placeholder="Search categories..." id="categorySearch" oninput="filterItems('category')" />
+  </div>
+
+  <div class="pc-grid" id="categoryGrid">
+    <div class="pc-card selected" onclick="selectPC(this)">
+      <div class="pc-thumb">🛡</div>
+      <div class="pc-name">Life Insurance</div>
+      <div class="pc-meta">Insurance</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">🏠</div>
+      <div class="pc-name">Home Insurance</div>
+      <div class="pc-meta">Insurance</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">💳</div>
+      <div class="pc-name">Credit Cards</div>
+      <div class="pc-meta">Finance</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">🏡</div>
+      <div class="pc-name">Mortgage</div>
+      <div class="pc-meta">Finance</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">🐾</div>
+      <div class="pc-name">Pet Insurance</div>
+      <div class="pc-meta">Insurance</div>
+    </div>
+    <div class="pc-card" onclick="selectPC(this)">
+      <div class="pc-thumb">₿</div>
+      <div class="pc-name">Crypto Trading</div>
+      <div class="pc-meta">Finance</div>
+    </div>
+  </div>
+
+  <button class="add-new-btn" onclick="alert('Add category — coming soon')">+ Add new category</button>
+</div>
+
+<!-- Continue to generate -->
+<div class="continue-bar">
+  <button class="continue-btn" onclick="alert('Step 3: Generate — coming soon')">Continue → Generate</button>
+</div>
+
+</div><!-- close step2 -->
+
 <script>
   function selectCat(card) {
     document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
   }
+  // Step navigation
+  function goToStep2() {
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function goToStep1() {
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step1').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Product / Category toggle
+  function togglePC(btn, view) {
+    document.querySelectorAll('.pc-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('productView').style.display = view === 'product' ? 'block' : 'none';
+    document.getElementById('categoryView').style.display = view === 'category' ? 'block' : 'none';
+  }
+  function selectPC(card) {
+    card.closest('.pc-grid').querySelectorAll('.pc-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+  function filterItems(type) {
+    const q = document.getElementById(type + 'Search').value.toLowerCase();
+    document.querySelectorAll('#' + type + 'Grid .pc-card').forEach(c => {
+      const name = c.querySelector('.pc-name').textContent.toLowerCase();
+      c.style.display = name.includes(q) ? '' : 'none';
+    });
+  }
+
   function selectFormat(btn, fmt) {
     document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
